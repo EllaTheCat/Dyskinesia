@@ -1,0 +1,282 @@
+#!/bin/bash
+
+# Goodies banner, a silly UI addition built upon the sway nagbar, that
+# provides helpful hints and a custom menu in a horizontal full-width
+# banner on the current output.
+
+# These names must track the names listed in the eponymous section
+# inside SWAY_CONFIG_FILE. Config variables are not shell variables.
+export SWAY_CONFIG_FILE=${HOME}/sway/config
+export SWAY_CONFIG_DIR=${HOME}/.config/sway/config.d
+export SWAY_SCRIPTS_DIR=${HOME}/.config/sway/scripts.d
+export SWAY_ASSETS_DIR=${HOME}/.config/sway/assets.d
+
+# The help text on the left of the banner (-m option) can be made
+# dynamic by varying the "$hintsN" assigned to "hints"
+hints0="\
+to exit sway type Shift+Super+x Shift+Super+x ...\
+to get a terminal type Super+Tab ...\
+to cycle through the popups type Super+minus repeatedly..."
+
+hints2="\
+to visit workspace 86 type Super+8 6 ...\
+OR type kp/ kp8 kp6 on the numpad (numck on) ...\
+to move a container to 42 type Shift+Super+4 2 ...\f
+OR type kp* kp4 kp2 on the numpad (numlock on) ..."
+
+# Hack: the tens_of_seconds digit is [0-5], 6 is a "perfect number".
+d=$(date)
+minute=${d:14:1}
+hints="..."
+# The hints changes happen on minute boundaries. User only sees a
+# change after pressing $mod+f12 to show.
+case "$minute" in
+    ([0135])
+	hints=$hints0
+	;;
+    ([24])
+	hints=$hints2
+	;;
+    (*)
+	hints="..."
+	;;
+esac
+
+# Show the goodies banner at the bottom edge of the current
+# workspace.
+#
+function show
+{
+    # The -m text is dynamic help text hints for beginners. Buttons
+    # appear on the banner in left-to-right order when the -b buttons
+    # are here in bottom-to-top order. Menu items: characters
+    # [a-z][0-9] are safe to use with -b option , pango dislikes &<>
+    swaynag -e bottom --button-background 004400 --background 004400 \
+            --border-bottom 004400 --border 004400 \
+            --button-text ffeeff \
+	    --font "DejaVu Sans 8" \
+	    --text eeffee \
+            -m "${hints}" \
+	    -b 'dvd tray' 'eject -T /dev/sr0' \
+	    -b 'exit'     'goodies.script are-you-sure sway exit' \
+	    -b 'poweroff' 'goodies.script are-you-sure sudo poweroff'\
+	    -b 'reboot'   'goodies.script are-you-sure sudo reboot' \
+ 	    -b 'umount external disks' 'foot --title="umount external disks" --hold -e udiskie-umount -a' \
+	    -b 'rebuild popuptools' 'foot --title="rebuild popuptools" --hold -e goodies.script popuptools' \
+	    -b 'reload and refresh' 'hide; sway "reload" ; show;' \
+	&
+	# There should be a single ampersand on the line above to run
+	# swaynag without blocking.
+}
+
+#
+# Remove the goodies banner from the workspace it was originally shown on.
+#
+function hide
+{
+    # Hide/show is colour keyed to the background, in this case, a dark green.
+    pkill -f 'swaynag -e bottom --button-background 004400 --background'
+}
+
+#
+# Give the user an opportunity to use a mouse to cancel the command
+# that would otherwise end the sway session.
+#
+function are-you-sure
+{
+    # Don't reduce this below fifteen seconds except for debug and
+    # test.
+    timeout=15s
+    # Hide the dark green goodies banner to indicate that the session
+    # might terminate.
+    hide
+    # Warn the user with a bright red nagbar appearing at the top edge
+    # of the screen.
+    swaynag -e top --button-background cc0000 --background cc0000 \
+            --border-bottom cc0000 --border cc0000 \
+            --button-text ffeeff \
+	    --font "DejaVu Sans 12" \
+	    --text eeffee -m \
+	    "WARNING: That command will terminate your sway session UNLESS you raise the green banner with F12 before the red banner timeout expires." \
+	&
+	# ^^^ Don't forget the ampersand that avoids blocking. The
+	# warning announcement draws attention to the red nagbar.
+	speak-ng "Warning"
+    # Allow enough time to read and heed the warning. To preserve the
+    # session the dark green goodies banner at the bottom must be
+    # showing when the timeout expires.
+    sleep ${timeout}
+    # Remove the bright red warning nagbar from the top edge.
+    pkill -f 'swaynag -e top --button-background cc0000 --background'
+    # Count running instances of the dark green goodies banner at the
+    # bottom. There will be none if the user does not intervene.
+    case "$(pgrep -cf 'swaynag -e bottom --button-background 004400 --background')" in
+	(0)
+	    # The banner stayed hidden during the timeout, dismount
+	    # all external disks and then invoke the command to end
+	    # the session.
+	    #
+	    # When  debugging, set  timeout 10s,  else set  15s. These
+	    # values accomodate  my slow reaction  time (bradykinesia)
+	    # induced by  Parkinson's Disease.  The  announcement does
+	    # not depend on the timeout value, just on the command.
+	    speak-ng "$*"
+	    if [ ${timeout/s/} -ge 15 ]; then
+		udiskie-umount -a
+		sway "exec $*"
+       	    fi	       
+	    ;;
+	(*)
+	    # The banner was raised during the timeout, the system
+	    # infers that the user wants to continue and does not
+	    # invoke the command to end the session, it invtes the
+	    # user to continue the session instead.
+	    speak-ng "please continue the session"
+	    ;;
+    esac
+}
+
+#
+# A popup terminal homage to yakuake and a popup audio mixer with
+# sophisticated volume control.
+#
+# This is a menu item on the green banner to discourage running the
+# command in a popup terminal (which it kills).
+#
+function popuptools
+{
+    # Console that resembles a floating terminal. User is expected to
+    # toggle frequently between show and hide using a dedicated key.
+    # LHS and RHS prefixes refer to the hand most likely to be used to
+    # access a popup terminal. To be clear there are as many popup
+    # terminals as there are hands, TWO.
+
+    # Ensure all existing instances are destroyed before makog more.
+    # Try to better than killall with pavucontrol.
+
+    # Do NOT be tempted to add spaces in order to align paramwters for
+    # eyeballing checks, because any dual criteria must be separated
+    # by ONE space.
+
+    # These cases, with the exception of (*), are all DEPRECATED
+    # because they are seldom used and hence subject to bitrot.
+    # There's at least one example already.
+
+    # kgx is the gnome 47 "Console" app, it's nice and simple with
+    # tabs that dropdown users expect.
+    case "${1:-'all'}" in
+	('lhs')
+	    # This case is DEPRECATED.
+	    sway '[title="LHS PopUp Terminal" ] kill'
+	    sway "exec rofi-sensible-terminal  --title=\"LHS PopUp Terminal\""
+	    sway "[title=\"LHS PopUp Terminal\"] move scratchpad"
+	    ;;
+	('rhs')
+	    # This case is DEPRECATED.
+	    sway '[title="RHS PopUp Terminal" ] kill'
+	    sway "exec rofi-sensible-terminal  --title=\"RHS PopUp Terminal\""
+	    sway "title=\"RHS PopUp Terminal\"] move scratchpad"
+	    ;;
+	('vol')
+
+	    # This case is DEPRECATED.
+.	    sway '[title="Volume Control"] kill'
+	    sway "exec pavucontrol"
+	    sleep 1s
+	    sessway "[title=\"Volume Control\"] move scratchpad"
+	    ;;
+	(*)
+	    # This case is unconditional without the three deprecated
+	    # cases. Any extsnt popups are killed before all popups
+	    # are invoked once more.
+	    sway '[title="PopUp Terminal"] kill'
+	    sway '[title="Volume Control"] kill'
+	    sway "exec kgx --title=\"LHS PopUp Terminal\""  
+	    sway "exec kgx --title=\"RHS PopUp Terminal\""
+	    sway "exec pavucontrol"
+	    sleep 1s
+	    # Each popup instance is made floating before being moved
+	    # to the scratchpad in order that it will appear in front
+	    # of any fullscreen video when enabled.
+	    sway '[title="PopUp Terminal"] floating enable, move scratchpad;'  
+	    sway '[title="Volume Control"] floating enable, move scratchpad;'
+	    ;;
+    esac
+    # Using for_window to do tidying up when the windows are mapped
+    # is done in config, see POPUPTOOLS TIDYING UP.
+}
+# end popuptools
+
+#
+# Mount some fifteen year old Samsung internal drives.
+# Yes, it's ellathecat's quirky DE.
+#
+function msam
+{
+    sudo mkdir -p /mnt/Samsung-4; sleep 1;
+    sudo mount -t ntfs /dev/sda1 /mnt/Samsung-4
+    sudo mkdir -p /mnt/Samsung-5; sleep 1;
+    sudo mount -t ntfs /dev/sdb1 /mnt/Samsung-5
+    sudo mkdir -p /mnt/Samsung-3; sleep 1;
+    sudo mount -t ntfs /dev/sdd1 /mnt/Samsung-3
+    sudo mkdir -p /mnt/Samsung-6; sleep 1;
+    sudo mount -t ntfs /dev/sde1 /mnt/Samsung-6
+}
+
+#
+# Umount some fifteen year old Samsung internal drives.
+# Yes, it's ellathecat's quirky DE.
+#
+function usam
+{
+    sudo umount /mnt/Samsung-3
+    sudo umount /mnt/Samsung-4
+    sudo umount /mnt/Samsung-5
+    sudo umount /mnt/Samsung-6
+}
+
+#
+# Start here.
+#
+case "${1:-toggle}" in
+    (show)
+	show 
+	;;
+    (hide)
+	hide
+	;;
+    (toggle)
+	case "$(pgrep -cf 'swaynag -e bottom --button-background 004400 --background')" in
+	    (0) 
+	        show
+		;;
+	    (1)
+	        hide
+		;;
+	    (*)
+		exit 2
+		;;
+	esac
+	;;
+    # Popup terminal, volume control, download mgmt,
+    (popuptools)
+	$1
+	;;
+    # Are you sure wrapper.
+    (are-you-sure)
+	$@
+	;;
+    # Mount and Umount two (ancient) internal SATA HDDs
+    (msam|usam)
+	$1
+	;;
+    # Not implemented stuff.
+    (*)
+        exit 1
+        ;;
+esac
+exit 0
+
+#
+# Done.
+#

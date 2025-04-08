@@ -1,0 +1,61 @@
+#!/bin/bash
+# A script to set things up _sequentially_.
+
+### SOME IMPORTANT EARLY DECLARATIONS
+
+# These names must track the names listed in the eponymous section
+# inside SWAY_CONFIG_FILE. Config variables are not shell variables.
+export SWAY_CONFIG_FILE=${HOME}/sway/config
+export SWAY_CONFIG_DIR=${HOME}/.config/sway/config.d
+export SWAY_SCRIPTS_DIR=${HOME}/.config/sway/scripts.d
+export SWAY_ASSETS_DIR=${HOME}/.config/sway/assets.d
+
+### REINSTALL GOODIES BEGIN
+# Nothing should be showing at this stage.
+${SWAY_SCRIPTS_DIR}/goodies.script hide
+sleep 1
+
+### INSTALL POPUPTOOLS
+# Destroy all current popuptools and then install the two PopUp Terminals and
+# the Volume Control on the scratchpad.
+swaymsg "exec \"${SWAY_SCRIPTS_DIR}/goodies.script popuptools\""
+
+### INSTALL WORKSPACES
+# BpyTOP, VLCx2  Firefox, Files, Emacs. The sleep delays were
+# tuned to keep each app on its associated workspace.
+swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 97\"" ; sleep 5s ;
+swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 89\"" ; sleep 3s ;
+swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 88\"" ; sleep 7s ;
+swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 55\"" ; sleep 9s ;
+swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 44\"" ; sleep 5s ;
+swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 33\"" ; sleep 5s ;
+
+### INITIALISE EXTRA USER DISK DRIVES.
+#
+# Extra disk drives that are monopolised by the user, are not allowed
+# to hang off /home, are hung off /run/media/${USER}/ (on fedora) or
+# similar on other Linux distros. The goodies menu has means to
+# "unmount external disks" that exists to make this point.
+#
+# internal SATA drives are mounted via fstab leaving "udiskie" to do
+# the USB drives, to be shown as mounted by nautilus in the sidebar.
+swaymsg "exec 'udiskie -a'"; sleep 9s ; 
+
+# Finally, post the goodies banner (runtime help) and the winapps
+# menu, in that order, both on the preferred output.
+swaymsg "focus output VGA-1" ; sleep 1s ;
+swaymsg "exec 'goodies.script show'"; sleep 1s ;
+swaymsg "exec 'rofi -show combi -combi-modes window\#drun -modes'" 
+
+# The windows section of the winapps menu is at the top and it lists
+# the popuptools first then the apps that have recently been setup in
+# order of their appearance. The apps section of the winapps menu
+# lists available gui apps in alphabet order. There is a minor
+# maintenance burden here, the winapps menu invoked here should be
+# similar to the $winappsmenu invoked by the binding in 'config'.
+# To dismiss the menu without focus or launch press Escape.
+
+
+#
+# Done
+#
