@@ -1,0 +1,2227 @@
+
+# -*- Mode: shell-script -*-
+### ellathecat's comment-heavy config for sway on two or three
+### HD monitors.
+
+### DESKTOP OVERVIEW ###
+
+# With 3 monitors you see three screens with a continuous backdrop of
+# the River Thames in London, photographed from the London Eye. Each
+# screen shows a ststus bar at the bottom (unless in fullscreen). The
+# status bar has a translucent background. The left end of the status
+# bar show a Binding Mode Indicator, black text on yellow backgound
+# (unless in default mode). Next on the left are numbered tabs which
+# indicate the active double-digit workspaces on that output, ranging
+# 00 to 99, even mumbered on the left, odd numbered in the centre, and
+# highest numbered on the right. Workspaces display containers that
+# are either tiled or floating. A green banner that can be toggled
+# between show and hide states is shown at the very bottom of the
+# active screen, below the status bar. On the left of the green banner
+# subluiminal hints are displayed, on the right is a small mouse
+# driven menu.
+
+### IMPORTANT EARLY DECLARATIONS ###
+
+# Use ~ in config, ${HOME} in bash scripts.
+set $SWAY_CONFIG_FILE ~/.config/sway/config
+set $SWAY_CONFIG_DIR  ~/.config/sway/config.d
+set $SWAY_SCRIPTS_DIR ~/.config/sway/scripts.d
+set $SWAY_ASSETS_DIR  ~/.config/sway/assets.d
+
+### NON-NEGOTIABLE MODIFIERS - DO NOT EDIT THESE BINDINGS!
+
+set $mod Mod4
+set $alt Mod1
+
+# I miss "xcape" from my i3/X11 days, the Alt keys would work as Alt
+# modifiers but standalone they behaved as Escape.
+
+### RELOAD ###
+
+# Reload the configuration from $SWAY_CONFIG_FILE in default mode.
+# (This does not refresh the goodies banner, use $mod+f12 to do that.)
+bindsym Shift+$mod+c mode default, reload ;
+
+### TERMINALS
+
+# If only terminal arguments didn't differ in the details between
+# popular terminals.  On ellathecat's machine we use gnome 'kvm' for
+# popup terminals and 'foot' for regular terminals instead of
+# rofi-sensible-terminal.
+
+# Right handed and left handed options for such a frequently used
+# binding.
+bindsym $mod+Return exec foot
+bindsym $mod+Tab    exec foot
+
+### POPUP TERMINAL
+
+# The two 'LHS/RHS PopUp Terminals' are a nod to classic dropdown
+# terminals such as 'yakuake'. See 'goodies.script' for details. They
+# are held in the scratchpad, you might want to take a look.
+
+# Show the next scratchpad window OR hide the currently visible one
+# ready to show the next one on the next keypress.
+bindsym $mod+minus scratchpad show
+
+# Look inside modes for bindings to this command AND look at the top
+# of the winapp menu for popup windows. You may be able to get to a
+# popup terminal or volume control faster.
+
+# You can rebuild the popups at any time via the menu on the green
+# banner managed by 'goodies.script'. For example you'd lose a
+# terminal's data but you'd reset it were it frozen.
+
+### POPUPS IN FULLSCREEN
+
+# The popup Volume Control is changed to a floating window just before
+# it is moved to the scratchpad. This is done to use a feature
+# introduced in i3 4.24: "Display all floating windows (during
+# fullscreen) regardless to which application they belong to.
+# Unfortunately the feature is not yet in Sway so use the default
+# until it is.
+
+### i3 4.24 ### popup_during_fullscreen all
+### sway    ### popup_during_fullscreen smart
+popup_during_fullscreen smart
+
+### MOUSE LOCATOR
+
+# This shows the mouse cursor against the uniformly dark background of
+# a terminal that covers all displays.
+
+for_window [title="mouse locator"] fullscreen toggle global
+bindsym $mod+d exec foot --title="mouse locator" -e sleep 3s
+
+### DISABLE FEATURES THAT MAKE THE CURSOR HARDER TO SEE.
+
+# Disable cursor hiding and warping. Quoth 'man 5 sway': "Deprecated:
+# use the virtual-pointer Wayland protocol instead." ellathecat:
+# <mumble>.
+
+seat seat0 hide_cursor 0
+seat seat0 hide_cursor when-typing disable
+mouse_warping none
+
+### EMBIGGEN THE CURSOR?
+
+# This doesn't enlarge unconditionally e.g. over emacs (gui) the
+# cursor size is the line height, which is sensible behaviour when I
+# think about it.
+
+# Set Cursor Theme and Size in Sway
+# https://kb.iany.me/para/lets/l/\
+
+#	Linux+Workstation/\
+#	Set+Cursor+Theme+and+Size+in+Sway
+#
+# Follow instructions therein (they suggest 36 points but ymmv too).
+seat seat0 xcursor_theme phinger-cursors-light 54
+
+# It does enlarge in the mouse locator, albeit as a text cursor. It
+# does enlarge over most terminals.
+
+# It does enlarge when over the status bar and when over the goodies
+# banner (yay!) so dragging towards a horizontal screen edge is much
+# better than flailing around.
+
+# No change over Firefox windows, even when you vary the text size
+# interactively with Ctrl++ Ctrl+- Ctrl+0, now that is annoying. :-(
+
+### TEXT CURSOR & WINDOW FOCUS
+
+# Prevent the text cursor from losing window focus because the mouse
+# has moved outside the window (by accident).
+focus_follows_mouse no
+
+
+### ARROW KEYS (on 60% keyboard layout)
+
+# Here we bite the bullet regarding 60% keyboard layout and the arrow
+# keys. The four keys 1.slash 2.right-alt 3.Menu and 4.right-control
+# will behave as arrow keys 1.Up 2.Left 3.Down 4.Right after
+# holding the Fn key and right Shift for 3 seconds. Hold again and
+# it toggles back.
+
+# This is a pain in the bum. Assuming that the arrow keys are enabled
+# we lose slash and question mark on the Up arrow and Menu on the Down
+# arrow.
+
+# Easy way to type characters made unavailable when arrow keys enabled
+# on 60% keyboard 3).=
+
+bindsym       Control+$mod+Up   exec wtype /
+bindsym Shift+Control+$mod+Up   exec wtype ?
+
+# Easy way to type up and down keys made unavailable when slash and
+# Menu enabled on 60% keyboard 3).
+
+bindsym       Control+$mod+slash   exec wtype -M ctrl p -m ctrl
+bindsym       Control+$mod+Menu    exec wtype -M ctrl n -m ctrl
+
+# Tolerable way to type left and right keys made unavailable when
+# slash and Menu enabled on 60% keyboard 3). Keycaps < and >. 
+bindsym       Control+$mod+comma   exec wtype -M ctrl b -m ctrl
+bindsym       Control+$mod+period  exec wtype -M ctrl f -m ctrl
+
+### WINDOW / APPLICATIONS MENU
+
+# Modify the fedora sway spin rofi apps menu by prepending a window
+# menu.  Window menu is a list of running app instances identified by
+# their window titles. The composite menu is called the 'winapps menu"
+
+set $winappsmenu \
+    exec rofi -show combi -combi-modes window\#drun -modes combi
+
+### SIDEBAR - ROFI IS THEMED.
+
+# ellathecat likes the clean-looking "sidebar" theme by Qball. This
+# theme shows the menu as a single column that is paged and wraps
+# around, that slides in and out from the left edge of the current
+# nonitor. 
+
+# There is 'docu', by Qball, and the eye candy 'fullscreen-preview'
+# by Dave Davenport: each puts up a 2D grid of buttons for quicker
+# navigation.
+
+# Don't worry, i3 purists have the 'dmenu' theme ;-) It takes one line
+# of screen real-estate.
+
+### WINDOW / APPLICATIONS MENU (continued)
+
+# We often want to call the winapps menu directly (as opposed to
+# calling it after visiting certain other workspaces, more on this
+# feature later).
+
+# Sway can have the user press two non-modifier keys together and
+# generate a keysym. It is noteworthy that i3 cannot. How well Sway
+# does depends on the keyboard you are using, more on this later.
+
+# Depending on how your keyboard gets along with Sway quirks you may
+# wish to to bind to a composite keysym made from the Up and Down
+# arrows together. It is immune to runtime reconfiguring of my 60%
+# keyboard as was described earlier: whichever pair of keysyms is
+# active, pressing that pair shows the winapps menu.
+
+bindsym Up+Down    $winappsmenu
+bindsym slash+Menu $winappsmenu
+
+# ================================================================ #
+# ellathecat can't believe this hack actually worked ...           #
+# ================================================================ #
+
+# The menu then appears, in this config it slides in from the left
+# edge of the active output. If you just want to visit a workspace
+# without launching an app, pressing Escape (including CapsLock when
+# mapped to Escape or even Control+open-square-bracket) will dismiss
+# the menu.
+
+### A CAN OF WORMS ###
+
+# The successful binding of Up+Down and slash+Menu to $winappsmenu
+# came as a surprise. The first three examples below are a surprise
+# too, none of them works!
+ 
+### DO NOT BIND THESE KEYS ### bindsym Down+Left $winappsmenu
+### DO NOT BIND THESE KEYS ### bindsym Down+Right $winappsmenu
+### DO NOT BIND THESE KEYS ### bindsym Left+Right $winappsmenu
+
+# Considering the arrrow keys only, to keep things simple, these three
+# all work! What's so special about the Up key? One hypothesis is that
+# Up is on a different row to the other three.
+
+### BINDING THESE KEYS CAN WORK ### bindsym Up+Down $winappsmenu
+### BINDING THESE KEYS CAN WORK ### bindsym Up+Left $winappsmenu
+### BINDING THESE KEYS CAN WORK ### bindsym Up+Right $winappsmenu
+
+# We bound Up+Down to $winappsmenu because the keys are easy to
+# operate right-handed. We have two more arrow key pairs available.
+
+# 1) The standard binding for scratchpad show is two-handed hence
+# cumbersome; we add this because again the keys are easy to operate
+# right-handed.
+bindsym Left+Up scratchpad show
+# 2) Reserved for the user to bind as desired.
+bindsym Up+Right nop
+
+### BINDING MODE INDICATOR (BMI)
+
+# The BMI consists of black text on a bright yellow background. It is
+# located on the left of a status bar except for default mode when it
+# is absent. It indicates the current mode explicitly as an informal
+# requirement; here the mode is implicit because the BNI lists (only
+# some of) the bindings for the mode, which the user requested.
+
+# In the next section there is a mode called $Kill; note the dollar
+# sign. The "truename" of the mode is the long string consisting of
+# everything on the line after 'set $Kill". Why? The truename is
+# displayed as the Binding Mode Indicator on the status line when the
+# {other than default} mode is active. Here the BMI holds the dollar
+# name). The truename is declared and defined just once per mode so
+# feel free to customise your BMIs to suit your needs/whims.
+
+### DOUBLETAP BINDINGS HAVE AN "ARE YOU SURE?" FEATURE ON SPACEBAR
+ 
+# The "double tap to kill" mode kills a single window with two presses
+# of the same key. It has a cancel option: press space after the first
+# key press. It replaces the classic $mod+q binding.
+
+set $Kill Shift+Super+Q kill +A +W +S next ws prev ws next op
+mode "$Kill" {
+    bindsym space mode default
+    bindsym Shift+$mod+minus scratchpad show
+    
+    bindsym Shift+$mod+q  mode default, kill;
+    bindsym Shift+$mod+a  workspace next_on_output
+    bindsym Shift+$mod+w  workspace prev_on_output
+    bindsym Shift+$mod+s  focus output next
+
+    # Sometimes EMACS DISAPPEARS WHILE TYPING because a typo has made
+    # it transparent.  THIS KEY RESTORES EMACS.
+    #
+    # It has no modifiers unlike most others in this mode, and it also
+    # restores default mode. Press "Supwr+Shift+q" ONCE, the $Kill BMI
+    # appears, then press "Tab" on its own, the $Kill BMI disappears,
+    # and Emacs reappears. This has no BMI text, ('cos it's a bugfix).
+    bindsym Tab [tle=\"Emacs\"] mode default, opacity 1.0;
+}
+bindsym Shift+$mod+q mode "$Kill"
+
+# The "double tap to end sway session" mode terminates sway with two
+# presses of the same key, 'x'.  It has a cancel option: press space
+# after the first key press. It kills all windows rather than a single
+# window.
+#
+# Instead of performing a simple 'sway exit' control is given to the
+# goodies script which will first unmount external disks and then
+# gently poweroff or reboot or sway exit without user intervention.
+# The mouse can be used like it is used in goodies.script to cancel.
+set $SwayExit Shift+$mod x to exit sway, space to cancel
+mode "$SwayExit" {
+    bindsym space mode default
+    bindsym $mod+minus scratchpad show
+    bindsym $alt+Delete scratchpad show
+    # Same as used to enter this mode.
+    bindsym Shift+$mod+x mode default,\
+	    exec "$SWAY_SCRIPTS_DIR/goodies.script \
+are-you-sure sudo poweroff"
+}
+bindsym Shift+$mod+x mode "$SwayExit"
+
+### OUTPUT CONFIGURATION
+
+# Ella has three HD monitors side-by-side, output HDMI-A-2 appearing
+# on the left, output VGA_1 appearing in the middle and output
+# HDMi-A-2 appearing on the right.
+
+# To be specific, "quietpc" has one HDMI, one DVI and one VGA output
+# on its Gigabyte Z97 UD3H motherboard and each Benq GL2450H monitor
+# has one HDMI, one DVI and one VGA input.  Each output can connect to
+# a input of the same type using a cable with the same type of
+# matching connector at each end.
+
+# Thus you can use a dual monitor hardware & cabling arrangement with
+# the third output connected (optionally via an HDMI to USB box with
+# loop through) to an unused HDMI (or DVI) input on one of your two
+# monitors or to a dummy monitor dongle.
+
+# DVI,VGA,HDMI
+set $lmon HDMI-A-2
+set $cmon VGA-1
+set $rmon HDMI-A-1
+
+output $lmon resolution 1920x1080 Position 0,0 \
+       bg $SWAY_ASSETS_DIR/swaybg1.jpg fill
+output $cmon resolution 1920x1080 position 1920,0 \
+       bg $SWAY_ASSETS_DIR/swaybg2.jpg fill
+output $rmon resolution 1920x1080 position 3840,0 \
+       bg $SWAY_ASSETS_DIR/swaybg3.jpg fill
+
+# This is an example of not relying on the default. ellathecat's third
+# monitor is smaller than the others, after trying other scale factors
+# reverting it to 1.0 required this.
+output $rmon scale 1
+
+### IDLE CONFIGURATION
+
+# Canonical use case is movie watching when fullscreen inhibits idle.
+# Yet the two lines below do NOT work for a fullscreen movie with or
+# without the comments! NOT A BUG, USER ERROR?
+
+### for_window [class="^.*"]  inhibit_idle fullscreen
+### for_window [app_id="^.*"] inhibit_idle fullscreen
+
+# man 5 sway inhibit_idle focus|fullscreen|open|none|visible
+# open will inhibit idle until the view is closed (or ...).
+# Belt'n'Braces class OR app_id
+
+for_window [class="mpv"]  inhibit_idle open
+for_window [app_id="mpv"] inhibit_idle open
+
+### INPUT CONFIGURATION
+
+# Here are my keyboards: 1) Microsoft 600 Wired (spare) 2) Dell USB
+# (daily driver) and 3) Koorui (mechanical, brown key feel, 60% keys
+# plus Fn).
+
+# Names come from "swaymsg -t get_inputs". Don't use "sway -t ...". -
+# For info on xkb configuration options, see xkeyboard-config(7).
+
+# For the desktop keyboards 1) and 2) we use xkb to swap control and
+# alt, disable capslock and make capslock do escape, enable numlock.
+
+# input 1118:2040:Microsoft_Wired_Keyboard_600 xkb_layout us
+# input 1118:2040:Microsoft_Wired_Keyboard_600 xkb_model pc105
+# input 1118:2040:Microsoft_Wired_Keyboard_600 xkb_variant euro
+# input 1118:2040:Microsoft_Wired_Keyboard_600 xkb_options ctrl:swap_lalt_lctl,ctrl:swap_ralt_rctl,caps:escape
+# input 1118:2040:Microsoft_Wired_Keyboard_600 xkb_capslock disabled
+# input 1118:2040:Microsoft_Wired_Keyboard_600 xkb_numlock enabled
+
+input 16700:8195:Dell_Dell_USB_Keyboard xkb_layout us
+input 16700:8195:Dell_Dell_USB_Keyboard xkb_model pc105
+input 16700:8195:Dell_Dell_USB_Keyboard xkb_variant euro
+input 16700:8195:Dell_Dell_USB_Keyboard xkb_options ctrl:swap_lalt_lctl,ctrl:swap_ralt_rctl,caps:escape
+input 16700:8195:Dell_Dell_USB_Keyboard xkb_capslock disabled
+input 16700:8195:Dell_Dell_USB_Keyboard xkb_numlock enabled
+
+input 12815:20571:Evision_RGB_Keyboard xkb_layout us
+input 12815:20571:Evision_RGB_Keyboard xkb_options ctrl:swap_lalt_lctl,caps:escape
+input 12815:20571:Evision_RGB_Keyboard xkb_capslock disabled
+input 12815:20571:Evision_RGB_Keyboard xkb_numlock enabled
+
+### VBOARD (virtual keyboard - work in progress)
+
+for_window [title="vboard.py"] floating enable, sticky enable, \
+	   resize set width 1289 px height 232 px, \
+	   move position 320 px 736 px, opacity 0.5;
+
+# CURSOR KEY LAYOUT
+
+# The cursor key layout is NOT i3, NOT sway or nvim, but a WASD-style
+# inverted-tee cursor on the I and JKL keys. If you do not want IJKL
+# it's straightforward to revert to HJKL.
+
+# i3
+# set $left j
+# set $down k
+# set $up l
+# set $right ;
+
+# sway,vim
+# set $left h
+# set $down j
+# set $up k
+# set $right l
+
+set $up   i
+set $left j
+set $down k
+set $right l
+
+### FOCUS / MOVE / RESIZE ##############
+
+# Change Focus (in default mode)
+
+bindsym $mod+$up    focus up
+bindsym $mod+$left  focus left
+bindsym $mod+$down  focus down
+bindsym $mod+$right focus right
+
+# Binding Mode Indicator help texts.
+# These are not rigorous definitions, they are informal reminders.
+set  $Focus mod+1of4cursorkeys mod+az[]ft45 Change focus. Resize=mod+r,  Move=mod+m.
+set   $Move mod+1of4cursorkeys Move focused container.    Resize=mod+r. Focus=mod+f.
+set $Resize mod+1of4cursorkeys Resize focused container.    Move=mod+m. Focus=mod+f.
+
+# Change Focus (using a mode).
+mode "$Focus" {
+    bindsym space mode default
+    bindsym $mod+minus scratchpad show
+    bindsym $alt+Delete scratchpad show
+
+    bindsym $mod+m mode "$Move"
+    bindsym $mod+r mode "$Resize"
+    bindsym $left focus left
+    bindsym $down focus down
+    bindsym $up focus up
+    bindsym $right focus right
+    # With a mode adding bindings is facilitated (more free keys).
+    
+    # These additions complement the cursor keys so they should lower mode
+    # change overhead. 'o' for offspring.
+    bindsym p focus parent
+    bindsym o focus child
+    #
+    bindsym f focus floating
+    bindsym t focus tiling
+
+    # These are similar bindings, same keys but no modifiers, to the
+    # #Kill mode.
+    bindsym z move container to output HDMI_A_1
+    bindsym x move container to output HDMI_A_2
+    bindsym c move container to output VGA_1
+    # These are too. Used in combination with the above you can target
+    # any workspace.
+    bindsym a workspace next_on_output
+    bindsym w workspace prev_on_output
+    # Of course you can bind otherwise free keys to any thing you like
+    # that works for you. Aesthetics are optional.
+}
+bindsym $mod+f mode "$Focus"
+
+# Move the focused container (using a mode).
+mode "$Move" {
+    bindsym space mode default
+    bindsym $mod+minus scratchpad show
+    bindsym $alt+Delete scratchpad show
+    
+    bindsym $mod+f mode "$Focus"
+    bindsym $mod+r mode "$Resize"
+    bindsym $left move left
+    bindsym $down move down
+    bindsym $up move up
+    bindsym $right move right
+    
+    # These are similar bindings, same keys but no modifiers, to the
+    # $Kill mode.
+    bindsym z move container to output HDMI_A_1
+    bindsym x move container to output HDMI_A_2
+    bindsym c move container to output VGA_1
+    # These are too. Used in combination with the above you can target
+    # any workspace.
+    bindsym a workspace next_on_output
+    bindsym w workspace prev_on_output
+}
+bindsym $mod+m mode "$Move"
+
+# Resize the focused container (using a mode).
+mode "$Resize"  {
+    bindsym space mode default
+    bindsym $mod+minus scratchpad show
+    bindsym $alt+Delete scratchpad show
+
+    Bindsym $mod+f mode "$Focus"
+    bindsym $mod+m mode "$Move"
+    # These have to be a matter of personal preference. Some bindings
+    # have shrink and grow for each of the four cursor arrow
+    # directions which is easy to work out from scratch but needs eght
+    # keys if you don't want modifiers.  This mode shrinks or grows
+    # thw width or height just like it says. There is disagreement
+    # about the vertical direction for growth. Here it's upwards but
+    # you may like it to grow downwards with increasing line number.
+
+    # Of course you can change it, but please change what the keys do
+    # not what key you use to do something. Edit here, do not edit the
+    # keys for {left,down,up,right} defined earlier, to be consistent.
+    # Driving on the left or right is arbitrary but we must all choose
+    # the same side.
+    bindsym $left  resize shrink width 10px
+    bindsym $down  resize shrink height 10px
+    bindsym $up    resize grow height 10px
+    bindsym $right resize grow width 10px
+}
+ bindsym $mod+r mode "$Resize"
+# END FOCUS / MOVE / RESIZE CONTAINER
+
+# Unfortunately using $mod+f to enter focus mode means we have had to
+# find another key to do fullscreen toggle. Adding alt to the classic
+# bindings is a reasonable solution.
+
+bindsym $alt+$mod+f fullscreen toggle
+bindsym $alt+$mod+g fullscreen toggle global
+
+# Abstracted aliases for the (three) outputs.
+
+set $spareop HDMI-A-1
+set  $leftop HDMI-A-2
+set $rightop VGA-1
+
+# numpad.config
+
+### INTRODUCING THE NUMERIC KEYPAD AS A PAINLESS OPTION ################
+
+# The next section describes double digit worksspaces with bindings
+# that start with one or two modifiers applied to a digit. That's lean
+# and mean but there's another key binding you may prefer, namely the
+# numeric keypad. YOU DON'T HAVE TO CONFIGURE ANYTHING TO USE IT but
+# NUMLOCK MUST BE ENABLED (see man sway input) like this:
+#
+# input 1118:2040:Microsoft_Wired_Keyboard_600 xkb_numlock enabled
+
+
+# EXAMPLE "Visit workspace 86"
+
+### 1ST NUMERIC KEYPAD e.g. press KP_/ or  KP_* or  KP_+
+
+# Selects 'visit workspace' or 'move container to workspace' or
+# 'commands' binding one of the arithmetic operators /*+ The decimal
+# point on the keypad isn't reserved so is used here as '1.0'.  (It's
+# the fencepost problem: we need 11 fenceposts with 10 lengths of
+# fencing.  In our opacity example, If we insist on ten rather than
+# eleven opacity levels, they are 0, 0.1 1 recurring, ... 0.8 8
+# recurring, 0.9 9 recurring rounded to 1.0 }.
+	    
+
+# / P Q = visit ...  equivalent  $mod+P then Q
+# * P Q = move ...   equivalent  $mod+shift+P then Q
+
+    
+### 2ND NUMERIC KEYPAD e.g. press KP_8
+
+# one of 0-9 on the keypad and it selects
+# the MOST significant digit P of workspace number PQ
+# The binding mode indicator prompts you by echoing P- 
+
+### 3RD NUMERIC keypad e.g. press KP_6
+
+# One of 0-9 on the keypad and it selects
+# the LEAST significant digit Q of workspace number PQ
+# You visit PQ / move container to PQ /etc according to 1st key
+
+### YOU DON'T HAVE A DESKTOP KEYBOARD?
+
+# If you are willing to have only the keypad bindng rewrite to replace
+# KP_0 to KP_9 with 0 to 9, and are prepared to very carefully decide
+# which modified keys are to replace { KP_Divide KP_Multiply
+# KP_Subtract KP_Add } then we suggest function keys or $mod+1 $mod+2
+# $mod+3 $mod+4 (remember we only have this set of bindings).
+
+# Standalone USB numeric keypads are a thing.
+
+# visit-workspace.config
+
+# -------------------------------------------
+
+# Binding mode indicator texts - must be unique.
+
+set $ws0 [visit] ws 0-
+set $ws1 [visit] ws 1-
+set $ws2 [visit] ws 2-
+set $ws3 [visit] ws 3-
+set $ws4 [visit] ws 4-
+set $ws5 [visit] ws 5-
+set $ws6 [visit] ws 6-
+set $ws7 [visit] ws 7-
+set $ws8 [visit] ws 8-
+set $ws9 [visit] ws 9-
+
+bindsym $mod+0 mode "$ws0"
+bindsym $mod+1 mode "$ws1"
+bindsym $mod+2 mode "$ws2"
+bindsym $mod+3 mode "$ws3"
+bindsym $mod+4 mode "$ws4"
+bindsym $mod+5 mode "$ws5"
+bindsym $mod+6 mode "$ws6"
+bindsym $mod+7 mode "$ws7"
+bindsym $mod+8 mode "$ws8"
+bindsym $mod+9 mode "$ws9"
+
+### NUMERIC KEYPAD 2 DIGITS - 3 KEYS. NO MODIFIERS. COMPACT.
+set $DIV Enter P then Q via keypad - visit workspace[PQ], space to cancel
+
+mode "$DIV" {
+    bindsym space mode default
+    bindsym minus scratchpad show
+    
+    bindsym KP_0 mode "$ws0"
+    bindsym KP_1 mode "$ws1"
+    bindsym KP_2 mode "$ws2"
+    bindsym KP_3 mode "$ws3"
+    bindsym KP_4 mode "$ws4"
+    bindsym KP_5 mode "$ws5"
+    bindsym KP_6 mode "$ws6"
+    bindsym KP_7 mode "$ws7"
+    bindsym KP_8 mode "$ws8"
+    bindsym KP_9 mode "$ws9"
+}
+bindsym KP_Divide mode "$DIV"
+
+# Here we visit a workspace then post the applications menu from one
+# binding.
+set $wsscript exec $SWAY_SCRIPTS_DIR/workspace.script
+
+mode "$ws0" {
+     bindsym space mode default
+
+     bindsym 0 mode default, $wsscript 00;
+     bindsym 1 mode default, $wsscript 01;
+     bindsym 2 mode default, $wsscript 02;
+     bindsym 3 mode default, $wsscript 03;
+     bindsym 4 mode default, $wsscript 04;
+     bindsym 5 mode default, $wsscript 05;
+     bindsym 6 mode default, $wsscript 06;
+     bindsym 7 mode default, $wsscript 07;
+     bindsym 8 mode default, $wsscript 08;
+     bindsym 9 mode default, $wsscript 09;
+
+     bindsym KP_0 mode default, $wsscript 00;
+     bindsym KP_1 mode default, $wsscript 01;
+     bindsym KP_2 mode default, $wsscript 02;
+     bindsym KP_3 mode default, $wsscript 03;
+     bindsym KP_4 mode default, $wsscript 04;
+     bindsym KP_5 mode default, $wsscript 05;
+     bindsym KP_6 mode default, $wsscript 06;
+     bindsym KP_7 mode default, $wsscript 07;
+     bindsym KP_8 mode default, $wsscript 08;
+     bindsym KP_9 mode default, $wsscript 09;
+}
+
+mode "$ws1" {
+     bindsym space mode default
+
+     bindsym 0 mode default, $wsscript 10;
+     bindsym 1 mode default, $wsscript 11;
+     bindsym 2 mode default, $wsscript 12;
+     bindsym 3 mode default, $wsscript 13;
+     bindsym 4 mode default, $wsscript 14;
+     bindsym 5 mode default, $wsscript 15;
+     bindsym 6 mode default, $wsscript 16;
+     bindsym 7 mode default, $wsscript 17;
+     bindsym 8 mode default, $wsscript 18;
+     bindsym 9 mode default, $wsscript 19;
+
+     bindsym KP_0 mode default, $wsscript 10;
+     bindsym KP_1 mode default, $wsscript 11;
+     bindsym KP_2 mode default, $wsscript 12;
+     bindsym KP_3 mode default, $wsscript 13;
+     bindsym KP_4 mode default, $wsscript 14;
+     bindsym KP_5 mode default, $wsscript 15;
+     bindsym KP_6 mode default, $wsscript 16;
+     bindsym KP_7 mode default, $wsscript 17;
+     bindsym KP_8 mode default, $wsscript 18;
+     bindsym KP_9 mode default, $wsscript 19;
+}
+
+mode "$ws2" {
+     bindsym space mode default
+
+     bindsym 0 mode default, $wsscript 20;
+     bindsym 1 mode default, $wsscript 21;
+     bindsym 2 mode default, $wsscript 22;
+     bindsym 3 mode default, $wsscript 23;
+     bindsym 4 mode default, $wsscript 24;
+     bindsym 5 mode default, $wsscript 25;
+     bindsym 6 mode default, $wsscript 26;
+     bindsym 7 mode default, $wsscript 27;
+     bindsym 8 mode default, $wsscript 28;
+     bindsym 9 mode default, $wsscript 29;
+
+     bindsym KP_1 mode default, $wsscript 21;
+     bindsym KP_2 mode default, $wsscript 22;
+     bindsym KP_3 mode default, $wsscript 23;
+     bindsym KP_4 mode default, $wsscript 24;
+     bindsym KP_5 mode default, $wsscript 25;
+     bindsym KP_6 mode default, $wsscript 26;
+     bindsym KP_7 mode default, $wsscript 27;
+     bindsym KP_8 mode default, $wsscript 28;
+     bindsym KP_9 mode default, $wsscript 29;
+}
+
+mode "$ws3" {
+     bindsym space mode default
+
+     bindsym 0 mode default, $wsscript 30;
+     bindsym 1 mode default, $wsscript 31;
+     bindsym 2 mode default, $wsscript 32;
+     bindsym 3 mode default, $wsscript 33;
+     bindsym 4 mode default, $wsscript 34;
+     bindsym 5 mode default, $wsscript 35;
+     bindsym 6 mode default, $wsscript 36;
+     bindsym 7 mode default, $wsscript 37;
+     bindsym 8 mode default, $wsscript 38;
+     bindsym 9 mode default, $wsscript 39;
+
+     bindsym KP_0 mode default, $wsscript 30;
+     bindsym KP_1 mode default, $wsscript 31;
+     bindsym KP_2 mode default, $wsscript 32;
+     bindsym KP_3 mode default, $wsscript 33;
+     bindsym KP_4 mode default, $wsscript 34;
+     bindsym KP_5 mode default, $wsscript 35;
+     bindsym KP_6 mode default, $wsscript 36;
+     bindsym KP_7 mode default, $wsscript 37;
+     bindsym KP_8 mode default, $wsscript 38;
+     bindsym KP_9 mode default, $wsscript 39;
+}
+
+mode "$ws4" {
+     bindsym space mode default
+
+     bindsym 0 mode default, $wsscript 40;
+     bindsym 1 mode default, $wsscript 41;
+     bindsym 2 mode default, $wsscript 42;
+     bindsym 3 mode default, $wsscript 43;
+     bindsym 4 mode default, $wsscript 44;
+     bindsym 5 mode default, $wsscript 45;
+     bindsym 6 mode default, $wsscript 46;
+     bindsym 7 mode default, $wsscript 47;
+     bindsym 8 mode default, $wsscript 48;
+     bindsym 9 mode default, $wsscript 49;
+
+     bindsym KP_0 mode default, $wsscript 40;
+     bindsym KP_1 mode default, $wsscript 41;
+     bindsym KP_2 mode default, $wsscript 42;
+     bindsym KP_3 mode default, $wsscript 43;
+     bindsym KP_4 mode default, $wsscript 44;
+     bindsym KP_5 mode default, $wsscript 45;
+     bindsym KP_6 mode default, $wsscript 46;
+     bindsym KP_7 mode default, $wsscript 47;
+     bindsym KP_8 mode default, $wsscript 48;
+     bindsym KP_9 mode default, $wsscript 49;
+}
+
+mode "$ws5" {
+     bindsym space mode default
+
+     bindsym 0 mode default, $wsscript 50;
+     bindsym 1 mode default, $wsscript 51;
+     bindsym 2 mode default, $wsscript 52;
+     bindsym 3 mode default, $wsscript 53;
+     bindsym 4 mode default, $wsscript 54;
+     bindsym 5 mode default, $wsscript 55;
+     bindsym 6 mode default, $wsscript 56;
+     bindsym 7 mode default, $wsscript 57;
+     bindsym 8 mode default, $wsscript 58;
+     bindsym 9 mode default, $wsscript 59;
+
+     bindsym KP_0 mode default, $wsscript 50;
+     bindsym KP_1 mode default, $wsscript 51;
+     bindsym KP_2 mode default, $wsscript 52;
+     bindsym KP_3 mode default, $wsscript 53;
+     bindsym KP_4 mode default, $wsscript 54;
+     bindsym KP_5 mode default, $wsscript 55;
+     bindsym KP_6 mode default, $wsscript 56;
+     bindsym KP_7 mode default, $wsscript 57;
+     bindsym KP_8 mode default, $wsscript 58;
+     bindsym KP_9 mode default, $wsscript 59;
+}
+
+mode "$ws6" {
+     bindsym space mode default
+
+     bindsym 0 mode default, $wsscript 60;
+     bindsym 1 mode default, $wsscript 61;
+     bindsym 2 mode default, $wsscript 62;
+     bindsym 3 mode default, $wsscript 63;
+     bindsym 4 mode default, $wsscript 64;
+     bindsym 5 mode default, $wsscript 65;
+     bindsym 6 mode default, $wsscript 66;
+     bindsym 7 mode default, $wsscript 67;
+     bindsym 8 mode default, $wsscript 68;
+     bindsym 9 mode default, $wsscript 69;
+
+     bindsym KP_0 mode default, $wsscript 60;
+     bindsym KP_1 mode default, $wsscript 61;
+     bindsym KP_2 mode default, $wsscript 62;
+     bindsym KP_3 mode default, $wsscript 63;
+     bindsym KP_4 mode default, $wsscript 64;
+     bindsym KP_5 mode default, $wsscript 65;
+     bindsym KP_6 mode default, $wsscript 66;
+     bindsym KP_7 mode default, $wsscript 67;
+     bindsym KP_8 mode default, $wsscript 68;
+     bindsym KP_9 mode default, $wsscript 69;
+}
+
+mode "$ws7" {
+     bindsym 0 mode default, $wsscript 70;
+     bindsym 1 mode default, $wsscript 71;
+     bindsym 2 mode default, $wsscript 72;
+     bindsym 3 mode default, $wsscript 73;
+     bindsym 4 mode default, $wsscript 74;
+     bindsym 5 mode default, $wsscript 75;
+     bindsym 6 mode default, $wsscript 76;
+     bindsym 7 mode default, $wsscript 77;
+     bindsym 8 mode default, $wsscript 78;
+     bindsym 9 mode default, $wsscript 79;
+
+     bindsym KP_0 mode default, $wsscript 70;
+     bindsym KP_1 mode default, $wsscript 71;
+     bindsym KP_2 mode default, $wsscript 72;
+     bindsym KP_3 mode default, $wsscript 73;
+     bindsym KP_4 mode default, $wsscript 74;
+     bindsym KP_5 mode default, $wsscript 75;
+     bindsym KP_6 mode default, $wsscript 76;
+     bindsym KP_7 mode default, $wsscript 77;
+     bindsym KP_8 mode default, $wsscript 78;
+     bindsym KP_9 mode default, $wsscript 79;
+}
+
+mode "$ws8" {
+     bindsym space mode default
+
+     bindsym 0 mode default, $wsscript 80;
+     bindsym 1 mode default, $wsscript 81;
+     bindsym 2 mode default, $wsscript 82;
+     bindsym 3 mode default, $wsscript 83;
+     bindsym 4 mode default, $wsscript 84;
+     bindsym 5 mode default, $wsscript 85;
+     bindsym 6 mode default, $wsscript 86;
+     bindsym 7 mode default, $wsscript 87;
+     bindsym 8 mode default, $wsscript 88;
+     bindsym 9 mode default, $wsscript 89;
+
+     bindsym KP_0 mode default, $wsscript 80;
+     bindsym KP_1 mode default, $wsscript 81;
+     bindsym KP_2 mode default, $wsscript 82;
+     bindsym KP_3 mode default, $wsscript 83;
+     bindsym KP_4 mode default, $wsscript 84;
+     bindsym KP_5 mode default, $wsscript 85;
+     bindsym KP_6 mode default, $wsscript 86;
+     bindsym KP_7 mode default, $wsscript 87;
+     bindsym KP_8 mode default, $wsscript 88;
+     bindsym KP_9 mode default, $wsscript 89;
+}
+
+mode "$ws9" {
+     bindsym space mode default
+
+     bindsym 0 mode default, $wsscript 90;
+     bindsym 1 mode default, $wsscript 91;
+     bindsym 2 mode default, $wsscript 92; 
+     bindsym 3 mode default, $wsscript 93;
+     bindsym 4 mode default, $wsscript 94;
+     bindsym 5 mode default, $wsscript 95;
+     bindsym 6 mode default, $wsscript 96;
+     bindsym 7 mode default, $wsscript 97;
+     bindsym 8 mode default, $wsscript 98;
+     bindsym 9 mode default, $wsscript 99;
+
+     bindsym KP_0 mode default, $wsscript 90;
+     bindsym KP_1 mode default, $wsscript 91;
+     bindsym KP_2 mode default, $wsscript 92; 
+     bindsym KP_3 mode default, $wsscript 93;
+     bindsym KP_4 mode default, $wsscript 94;
+     bindsym KP_5 mode default, $wsscript 95;
+     bindsym KP_6 mode default, $wsscript 96;
+     bindsym KP_7 mode default, $wsscript 97;
+     bindsym KP_8 mode default, $wsscript 98;
+     bindsym KP_9 mode default, $wsscript 99;
+}
+
+# -------------------------------------------
+# move-container-to-ws.config
+
+# ---------------------------------------------------------------- #
+
+# Binding mode indicator texts - must be unique.
+set $cws0 [move window to] ws 0-
+set $cws1 [move window to] ws 1-
+set $cws2 [move window to] ws 2-
+set $cws3 [move window to] ws 3-
+set $cws4 [move window to] ws 4-
+set $cws5 [move window to] ws 5-
+set $cws6 [move window to] ws 6-
+set $cws7 [move window to] ws 7-
+set $cws8 [move window to] ws 8-
+set $cws9 [move window to] ws 9-
+
+bindsym Shift+$mod+0 mode "$cws0"
+bindsym Shift+$mod+1 mode "$cws1"
+bindsym Shift+$mod+2 mode "$cws2"
+bindsym Shift+$mod+3 mode "$cws3"
+bindsym Shift+$mod+4 mode "$cws4"
+bindsym Shift+$mod+5 mode "$cws5"
+bindsym Shift+$mod+6 mode "$cws6"
+bindsym Shift+$mod+7 mode "$cws7"
+bindsym Shift+$mod+8 mode "$cws8"
+bindsym Shift+$mod+9 mode "$cws9"
+
+### NUMERIC KEYPAD 2 DIGITS - 3 KEYS. NO MODIFIERS. COMPACT.
+### whereas alternative has TWO modifiers on 1st digit of 2.
+set $MUL Enter P then Q via keypad - mv ctr to workspace[PQ], space to cancel
+
+mode "$MUL" {
+    bindsym space mode default
+    bindsym minus scratchpad show
+
+    bindsym KP_0 mode "$cws0"
+    bindsym KP_1 mode "$cws1"
+    bindsym KP_2 mode "$cws2"
+    bindsym KP_3 mode "$cws3"
+    bindsym KP_4 mode "$cws4"
+    bindsym KP_5 mode "$cws5"
+    bindsym KP_6 mode "$cws6"
+    bindsym KP_7 mode "$cws7"
+    bindsym KP_8 mode "$cws8"
+    bindsym KP_9 mode "$cws9"
+}
+bindsym KP_Multiply mode "$MUL"
+
+# Moving the container to workspace XY does not move the user.
+
+mode "$cws0" {
+     bindsym space mode default
+
+     bindsym 0 mode default, \
+     move container to workspace number 00, workspace 00;
+     bindsym 1 mode default, \
+     move container to workspace number 01, workspace 01;
+     bindsym 2 mode default, \
+     move container to workspace number 02, workspace 02;
+     bindsym 3 mode default, \
+     move container to workspace number 03, workspace 03;
+     bindsym 4 mode default, \
+     move container to workspace number 04, workspace 04;
+     bindsym 5 mode default, \
+     move container to workspace number 05, workspace 05;
+     bindsym 6 mode default, \
+     move container to workspace number 06, workspace 06;
+     bindsym 7 mode default, \
+     move container to workspace number 07, workspace 07;
+     bindsym 8 mode default, \
+     move container to workspace number 08, workspace 08;
+     bindsym 9 mode default, \
+     move container to workspace number 09, workspace 09;
+
+     bindsym KP_0 mode default, \
+     move container to workspace number 00, workspace 00;
+     bindsym KP_1 mode default, \
+     move container to workspace number 01, workspace 01;
+     bindsym KP_2 mode default, \
+     move container to workspace number 02, workspace 02;
+     bindsym KP_3 mode default, \
+     move container to workspace number 03, workspace 03;
+     bindsym KP_4 mode default, \
+     move container to workspace number 04, workspace 04;
+     bindsym KP_5 mode default, \
+     move container to workspace number 05, workspace 05;
+     bindsym KP_6 mode default, \
+     move container to workspace number 06, workspace 06;
+     bindsym KP_7 mode default, \
+     move container to workspace number 07, workspace 07;
+     bindsym KP_8 mode default, \
+     move container to workspace number 08, workspace 08;
+     bindsym KP_9 mode default, \
+     move container to workspace number 09, workspace 09;
+}
+
+mode "$cws1" {
+     bindsym space mode default
+
+     bindsym 0 mode default, \
+     move container to workspace number 10, workspace 10;
+     bindsym 1 mode default, \
+     move container to workspace number 11, workspace 11;
+     bindsym 2 mode default, \
+     move container to workspace number 12, workspace 12;
+     bindsym 3 mode default, \
+     move container to workspace number 13, workspace 13;
+     bindsym 4 mode default, \
+     move container to workspace number 14, workspace 14;
+     bindsym 5 mode default, \
+     move container to workspace number 15, workspace 15;
+     bindsym 6 mode default, \
+     move container to workspace number 16, workspace 16;
+     bindsym 7 mode default, \
+     move container to workspace number 17, workspace 17;
+     bindsym 8 mode default, \
+     move container to workspace number 18, workspace 18;
+     bindsym 9 mode default, \
+     move container to workspace number 19, workspace 19;
+
+     bindsym KP_0 mode default, \
+     move container to workspace number 10, workspace 10;
+     bindsym KP_1 mode default, \
+     move container to workspace number 11, workspace 11;
+     bindsym KP_2 mode default, \
+     move container to workspace number 12, workspace 12;
+     bindsym KP_3 mode default, \
+     move container to workspace number 13, workspace 13;
+     bindsym KP_4 mode default, \
+     move container to workspace number 14, workspace 14;
+     bindsym KP_5 mode default, \
+     move container to workspace number 15, workspace 15;
+     bindsym KP_6 mode default, \
+     move container to workspace number 16, workspace 16;
+     bindsym KP_7 mode default, \
+     move container to workspace number 17, workspace 17;
+     bindsym KP_8 mode default, \
+     move container to workspace number 18, workspace 18;
+     bindsym KP_9 mode default, \
+     move container to workspace number 19, workspace 19;
+}
+
+mode "$cws2" {
+     bindsym space mode default
+
+     bindsym 0 mode default, \
+     move container to workspace number 20, workspace 20;
+     bindsym 1 mode default, \
+     move container to workspace number 21, workspace 21;
+     bindsym 2 mode default, \
+     move container to workspace number 22, workspace 22;
+     bindsym 3 mode default, \
+     move container to workspace number 23, workspace 23;
+     bindsym 4 mode default, \
+     move container to workspace number 24, workspace 24;
+     bindsym 5 mode default, \
+     move container to workspace number 25, workspace 25;
+     bindsym 6 mode default, \
+     move container to workspace number 26, workspace 26;
+     bindsym 7 mode default, \
+     move container to workspace number 27, workspace 27;
+     bindsym 8 mode default, \
+     move container to workspace number 28, workspace 28;
+     bindsym 9 mode default, \
+     move container to workspace number 29, workspace 29;
+
+     bindsym KP_0 mode default, \
+     move container to workspace number 20, workspace 20;
+     bindsym KP_1 mode default, \
+     move container to workspace number 21, workspace 21;
+     bindsym KP_2 mode default, \
+     move container to workspace number 22, workspace 22;
+     bindsym KP_3 mode default, \
+     move container to workspace number 23, workspace 23;
+     bindsym KP_4 mode default, \
+     move container to workspace number 24, workspace 24;
+     bindsym KP_5 mode default, \
+     move container to workspace number 25, workspace 25;
+     bindsym KP_6 mode default, \
+     move container to workspace number 26, workspace 26;
+     bindsym KP_7 mode default, \
+     move container to workspace number 27, workspace 27;
+     bindsym KP_8 mode default, \
+     move container to workspace number 28, workspace 28;
+     bindsym KP_9 mode default, \
+     move container to workspace number 29, workspace 29;
+}
+
+mode "$cws3" {
+     bindsym space mode default
+
+     bindsym 0 mode default, \
+     move container to workspace number 30, workspace 30;
+     bindsym 1 mode default, \
+     move container to workspace number 31, workspace 31;
+     bindsym 2 mode default, \
+     move container to workspace number 32, workspace 32;
+     bindsym 3 mode default, \
+     move container to workspace number 33, workspace 33;
+     bindsym 4 mode default, \
+     move container to workspace number 34, workspace 34;
+     bindsym 5 mode default, \
+     move container to workspace number 35, workspace 35;
+     bindsym 6 mode default, \
+     move container to workspace number 36, workspace 36;
+     bindsym 7 mode default, \
+     move container to workspace number 37, workspace 37;
+     bindsym 8 mode default, \
+     move container to workspace number 38, workspace 38;
+     bindsym 9 mode default, \
+     move container to workspace number 39, workspace 39;
+
+     bindsym KP_0 mode default, \
+     move container to workspace number 30, workspace 30;
+     bindsym KP_1 mode default, \
+     move container to workspace number 31, workspace 31;
+     bindsym KP_2 mode default, \
+     move container to workspace number 32, workspace 32;
+     bindsym KP_3 mode default, \
+     move container to workspace number 33, workspace 33;
+     bindsym KP_4 mode default, \
+     move container to workspace number 34, workspace 34;
+     bindsym KP_5 mode default, \
+     move container to workspace number 35, workspace 35;
+     bindsym KP_6 mode default, \
+     move container to workspace number 36, workspace 36;
+     bindsym KP_7 mode default, \
+     move container to workspace number 37, workspace 37;
+     bindsym KP_8 mode default, \
+     move container to workspace number 38, workspace 38;
+     bindsym KP_9 mode default, \
+     move container to workspace number 39, workspace 39;
+}
+
+mode "$cws4" {
+     bindsym space mode default
+
+     bindsym 0 mode default, \
+     move container to workspace number 40, workspace 40;
+     bindsym 1 mode default, \
+     move container to workspace number 41, workspace 41;
+     bindsym 2 mode default, \
+     move container to workspace number 42, workspace 42;
+     bindsym 3 mode default, \
+     move container to workspace number 43, workspace 43;
+     bindsym 4 mode default, \
+     move container to workspace number 44, workspace 44;
+     bindsym 5 mode default, \
+     move container to workspace number 45, workspace 45;
+     bindsym 6 mode default, \
+     move container to workspace number 46, workspace 46;
+     bindsym 7 mode default, \
+     move container to workspace number 47, workspace 47;
+     bindsym 8 mode default, \
+     move container to workspace number 48, workspace 48;
+     bindsym 9 mode default, \
+     move container to workspace number 49, workspace 49;
+
+     bindsym KP_0 mode default, \
+     move container to workspace number 40, workspace 40;
+     bindsym KP_1 mode default, \
+     move container to workspace number 41, workspace 41;
+     bindsym KP_2 mode default, \
+     move container to workspace number 42, workspace 42;
+     bindsym KP_3 mode default, \
+     move container to workspace number 43, workspace 43;
+     bindsym KP_4 mode default, \
+     move container to workspace number 44, workspace 44;
+     bindsym KP_5 mode default, \
+     move container to workspace number 45, workspace 45;
+     bindsym KP_6 mode default, \
+     move container to workspace number 46, workspace 46;
+     bindsym KP_7 mode default, \
+     move container to workspace number 47, workspace 47;
+     bindsym KP_8 mode default, \
+     move container to workspace number 48, workspace 48;
+     bindsym KP_9 mode default, \
+     move container to workspace number 49, workspace 49;
+}
+
+mode "$cws5" {
+     bindsym space mode default
+
+     bindsym 0 mode default, \
+     move container to workspace number 50, workspace 50;
+     bindsym 1 mode default, \
+     move container to workspace number 51, workspace 51;
+     bindsym 2 mode default, \
+     move container to workspace number 52, workspace 52;
+     bindsym 3 mode default, \
+     move container to workspace number 53, workspace 53;
+     bindsym 4 mode default, \
+     move container to workspace number 54, workspace 54;
+     bindsym 5 mode default, \
+     move container to workspace number 55, workspace 55;
+     bindsym 6 mode default, \
+     move container to workspace number 56, workspace 56;
+     bindsym 7 mode default, \
+     move container to workspace number 57, workspace 57;
+     bindsym 8 mode default, \
+     move container to workspace number 58, workspace 58;
+     bindsym 9 mode default, \
+     move container to workspace number 59, workspace 59;
+
+     bindsym KP_0 mode default, \
+     move container to workspace number 50, workspace 50;
+     bindsym KP_1 mode default, \
+     move container to workspace number 51, workspace 51;
+     bindsym KP_2 mode default, \
+     move container to workspace number 52, workspace 52;
+     bindsym KP_3 mode default, \
+     move container to workspace number 53, workspace 53;
+     bindsym KP_4 mode default, \
+     move container to workspace number 54, workspace 54;
+     bindsym KP_5 mode default, \
+     move container to workspace number 55, workspace 55;
+     bindsym KP_6 mode default, \
+     move container to workspace number 56, workspace 56;
+     bindsym KP_7 mode default, \
+     move container to workspace number 57, workspace 57;
+     bindsym KP_8 mode default, \
+     move container to workspace number 58, workspace 58;
+     bindsym KP_9 mode default, \
+     move container to workspace number 59, workspace 59;
+}
+
+mode "$cws6" {
+     bindsym space mode default
+
+     bindsym 0 mode default, \
+     move container to workspace number 60, workspace 60;
+     bindsym 1 mode default, \
+     move container to workspace number 61, workspace 61;
+     bindsym 2 mode default, \
+     move container to workspace number 62, workspace 62;
+     bindsym 3 mode default, \
+     move container to workspace number 63, workspace 63;
+     bindsym 4 mode default, \
+     move container to workspace number 64, workspace 64;
+     bindsym 5 mode default, \
+     move container to workspace number 65, workspace 65;
+     bindsym 6 mode default, \
+     move container to workspace number 66, workspace 66;
+     bindsym 7 mode default, \
+     move container to workspace number 67, workspace 67;
+     bindsym 8 mode default, \
+     move container to workspace number 68, workspace 68;
+     bindsym 9 mode default, \
+     move container to workspace number 69, workspace 69;
+
+     bindsym KP_0 mode default, \
+     move container to workspace number 60, workspace 60;
+     bindsym KP_1 mode default, \
+     move container to workspace number 61, workspace 61;
+     bindsym KP_2 mode default, \
+     move container to workspace number 62, workspace 62;
+     bindsym KP_3 mode default, \
+     move container to workspace number 63, workspace 63;
+     bindsym KP_4 mode default, \
+     move container to workspace number 64, workspace 64;
+     bindsym KP_5 mode default, \
+     move container to workspace number 65, workspace 65;
+     bindsym KP_6 mode default, \
+     move container to workspace number 66, workspace 66;
+     bindsym KP_7 mode default, \
+     move container to workspace number 67, workspace 67;
+     bindsym KP_8 mode default, \
+     move container to workspace number 68, workspace 68;
+     bindsym KP_9 mode default, \
+     move container to workspace number 69, workspace 69;
+}
+
+mode "$cws7" {
+     bindsym space mode default
+
+     bindsym 0 mode default, \
+     move container to workspace number 70, workspace 70;
+     bindsym 1 mode default, \
+     move container to workspace number 71, workspace 71;
+     bindsym 2 mode default, \
+     move container to workspace number 72, workspace 72;
+     bindsym 3 mode default, \
+     move container to workspace number 73, workspace 73;
+     bindsym 4 mode default, \
+     move container to workspace number 74, workspace 74;
+     bindsym 5 mode default, \
+     move container to workspace number 75, workspace 75;
+     bindsym 6 mode default, \
+     move container to workspace number 76, workspace 76;
+     bindsym 7 mode default, \
+     move container to workspace number 77, workspace 77;
+     bindsym 8 mode default, \
+     move container to workspace number 78, workspace 78;
+     bindsym 9 mode default, \
+     move container to workspace number 79, workspace 79;
+
+     bindsym KP_0 mode default, \
+     move container to workspace number 70, workspace 70;
+     bindsym KP_1 mode default, \
+     move container to workspace number 71, workspace 71;
+     bindsym KP_2 mode default, \
+     move container to workspace number 72, workspace 72;
+     bindsym KP_3 mode default, \
+     move container to workspace number 73, workspace 73;
+     bindsym KP_4 mode default, \
+     move container to workspace number 74, workspace 74;
+     bindsym KP_5 mode default, \
+     move container to workspace number 75, workspace 75;
+     bindsym KP_6 mode default, \
+     move container to workspace number 76, workspace 76;
+     bindsym KP_7 mode default, \
+     move container to workspace number 77, workspace 77;
+     bindsym KP_8 mode default, \
+     move container to workspace number 78, workspace 78;
+     bindsym KP_9 mode default, \
+     move container to workspace number 79, workspace 79;
+}
+
+mode "$cws8" {
+     bindsym space mode default
+
+     bindsym 0 mode default, \
+     move container to workspace number 80, workspace 80;
+     bindsym 1 mode default, \
+     move container to workspace number 81, workspace 81;
+     bindsym 2 mode default, \
+     move container to workspace number 82, workspace 82;
+     bindsym 3 mode default, \
+     move container to workspace number 83, workspace 83;
+     bindsym 4 mode default, \
+     move container to workspace number 84, workspace 84;
+     bindsym 5 mode default, \
+     move container to workspace number 85, workspace 85;
+     bindsym 6 mode default, \
+     move container to workspace number 86, workspace 86;
+     bindsym 7 mode default, \
+     move container to workspace number 87, workspace 87;
+     bindsym 8 mode default, \
+     move container to workspace number 88, workspace 88;
+     bindsym 9 mode default, \
+     move container to workspace number 89, workspace 89;
+
+     bindsym KP_0 mode default, \
+     move container to workspace number 80, workspace 80;
+     bindsym KP_1 mode default, \
+     move container to workspace number 81, workspace 81;
+     bindsym KP_2 mode default, \
+     move container to workspace number 82, workspace 82;
+     bindsym KP_3 mode default, \
+     move container to workspace number 83, workspace 83;
+     bindsym KP_4 mode default, \
+     move container to workspace number 84, workspace 84;
+     bindsym KP_5 mode default, \
+     move container to workspace number 85, workspace 85;
+     bindsym KP_6 mode default, \
+     move container to workspace number 86, workspace 86;
+     bindsym KP_7 mode default, \
+     move container to workspace number 87, workspace 87;
+     bindsym KP_8 mode default, \
+     move container to workspace number 88, workspace 88;
+     bindsym KP_9 mode default, \
+     move container to workspace number 89, workspace 89;
+}
+
+mode "$cws9" {
+     bindsym space mode default
+
+     bindsym 0 mode default, \
+     move container to workspace number 90, workspace 90;
+     bindsym 1 mode default, \
+     move container to workspace number 91, workspace 91;
+     bindsym 2 mode default, \
+     move container to workspace number 92, workspace 92;
+     bindsym 3 mode default, \
+     move container to workspace number 93, workspace 93;
+     bindsym 4 mode default, \
+     move container to workspace number 94, workspace 94;
+     bindsym 5 mode default, \
+     move container to workspace number 95, workspace 95;
+     bindsym 6 mode default, \
+     move container to workspace number 96, workspace 96;
+     bindsym 7 mode default, \
+     move container to workspace number 97, workspace 97;
+     bindsym 8 mode default, \
+     move container to workspace number 98, workspace 98;
+     bindsym 9 mode default, \
+     move container to workspace number 99, workspace 99;
+
+     bindsym KP_0 mode default, \
+     move container to workspace number 90, workspace 90;
+     bindsym KP_1 mode default, \
+     move container to workspace number 91, workspace 91;
+     bindsym KP_2 mode default, \
+     move container to workspace number 92, workspace 92;
+     bindsym KP_3 mode default, \
+     move container to workspace number 93, workspace 93;
+     bindsym KP_4 mode default, \
+     move container to workspace number 94, workspace 94;
+     bindsym KP_5 mode default, \
+     move container to workspace number 95, workspace 95;
+     bindsym KP_6 mode default, \
+     move container to workspace number 96, workspace 96;
+     bindsym KP_7 mode default, \
+     move container to workspace number 97, workspace 97;
+     bindsym KP_8 mode default, \
+     move container to workspace number 98, workspace 98;
+     bindsym KP_9 mode default, \
+     move container to workspace number 99, workspace 99;
+}
+
+# ---------------------------------------------------------------- #
+
+#
+# This third block of 100 double-digit keypressses has nothing to do
+# with workspaces.  2025-02-09: Delegating the commands to little
+# scripts, each responsible for a mode's worth of commands, typically
+# bound to the ten digits and the deciml point
+
+# Two adjacent modifiers, Mod4 and Mod1, Super_L and Alt are shown
+# here as examples, but multiple modifiers are becomingt cumberome, so
+# we fall back to using the numeric keypad bindings only.
+
+# Laptop users without a numpad, be creative and use the main number
+# keys as digits and (foe example) {F1 F2 F3 F4} instead of KP_/ KP_*
+# KP_+ KP_\n} Henceforth we refer to {KP_DIV, KP_MUL, ...}
+
+# If you use the numeric keypad bindings the default prefixes for
+# KP_DIV and KP_MUL are gone so use KP_+ alias KP_ADD, it is as
+# equally as large as they.  If we have KP_ADD we might as well have
+# the equally large KP_Enter for a second table of commands, alias
+# KP_NTR.
+
+### KP_DIV KP_MUL KP_ADD KP_NTR are their names. ##################
+
+set     $ADD add command number --
+set $addcmd0 add command number 0-
+set $addcmd1 add command number 1-
+set $addcmd2 add command number 2-
+set $addcmd3 add command number 3-
+set $addcmd4 add command number 4-
+set $addcmd5 add command number 5-
+set $addcmd6 add command number 6-
+set $addcmd7 add command number 7-
+set $addcmd8 add command number 8-
+set $addcmd9 add command number 9-
+
+bindsym $alt+$mod+0 mode "$addcmd0"
+bindsym $alt+$mod+1 mode "$addcmd1"
+bindsym $alt+$mod+2 mode "$addcmd2"
+bindsym $alt+$mod+3 mode "$addcmd3"
+bindsym $alt+$mod+4 mode "$addcmd4"
+bindsym $alt+$mod+5 mode "$addcmd5"
+bindsym $alt+$mod+6 mode "$addcmd6"
+bindsym $alt+$mod+7 mode "$addcmd7"
+bindsym $alt+$mod+8 mode "$addcmd8"
+bindsym $alt+$mod+9 mode "$addcmd9"
+
+mode "$ADD" {
+    bindsym space mode default
+    bindsym minus scratchpad show
+
+     bindsym KP_0 mode "$addcmd0"
+    bindsym KP_1 mode "$addcmd1"
+    bindsym KP_2 mode "$addcmd2"
+    bindsym KP_3 mode "$addcmd3"
+    bindsym KP_4 mode "$addcmd4"
+    bindsym KP_5 mode "$addcmd5"
+    bindsym KP_6 mode "$addcmd6"
+    bindsym KP_7 mode "$addcmd7"
+    bindsym KP_8 mode "$addcmd8"
+    bindsym KP_9 mode "$addcmd9"
+    # Might as well claim this. Depends upon numlock state like the
+    # digits.
+    bindsym KP_Decimal nop
+
+    # Visit Workspace and Move Container ... are commands too.
+    bindsym KP_Divide   mode "$DIV"
+    bindsym KP_Subtract mode "$SUB"
+    bindsym KP_Enter    mode "$NTR"
+    # Debounce the mode entry key. Here, that's addcmds.
+    bindsym KP_Add nop
+}
+bindsym KP_Add mode "$ADD"
+
+# ---------------------------------------------------------------- #
+
+# Set the window background opacity. Moving left to right along the
+# entire numbers row from accent grave to zero gives monotonically
+# increasing OPACITY, from fully tranlucent (transparent) to fully
+# opaque. Beware large translucent backgrounds on non-gaming PCs, your
+# CPU might  get hot pushing so many pixels.
+#
+mode "$addcmd0" {
+     bindsym space mode default
+     bindsym minus scratchpad show
+
+     # Setting opacity to zero makes objects transparent.
+     # The grave key is one step to the left of the 1 key
+     bindsym grave mode default, opacity 0.0;
+     # Translucent between opacities zero and one.
+     bindsym 1 mode default, opacity 0.1; 
+     bindsym 2 mode default, opacity 0.2; 
+     bindsym 3 mode default, opacity 0.3; 
+     bindsym 4 mode default, opacity 0.4; 
+     bindsym 5 mode default, opacity 0.5; 
+     bindsym 6 mode default, opacity 0.6;
+     bindsym 7 mode default, opacity 0.7;
+     bindsym 8 mode default, opacity 0.8;
+     bindsym 9 mode default, opacity 0.9;
+     # Setting opacity to one makes objects fully opaque.
+     # The 0 key is one step to the right of the 9 key.
+     bindsym 0 mode default, opacity 1.0;
+
+     # Setting opacity to zero makes objects transparent. 
+     # Unlike the numbers row 0 the 0 key is nearer 1 than 9.
+     bindsym KP_0 mode default, opacity 0.0;
+     # Translucent between opacities zero and one.
+     bindsym KP_1 mode default, opacity 0.1; 
+     bindsym KP_2 mode default, opacity 0.2; 
+     bindsym KP_3 mode default, opacity 0.3; 
+     bindsym KP_4 mode default, opacity 0.4; 
+     bindsym KP_5 mode default, opacity 0.5; 
+     bindsym KP_6 mode default, opacity 0.6;
+     bindsym KP_7 mode default, opacity 0.7;
+     bindsym KP_8 mode default, opacity 0.8;
+     bindsym KP_9 mode default, opacity 0.9;
+     # Setting opacity to one makes objects fully opaque.
+     # If KP_0 is opacity 0.0. the . key has to be opacity 1.0.
+     bindsym KP_Decimal mode default, opacity 1.0;
+}
+
+# Pattern for commands (other than the simplest like opacity above) is
+# to have one script per mode with typically ten cases, but possibly
+# twenty, depending upon how you treat "digit" and "KP_digit". The
+# script name is derived from the two mode names, the 1st and 2nd of
+# the 3 keypresses.
+
+mode "$addcmd1" { 
+    bindsym space mode default
+    bindsym minus scratchpad show
+
+    bindsym 0 mode default, exec addcmd1.script 0;
+    bindsym 1 mode default, exec addcmd1.script 1;
+    bindsym 2 mode default, exec addcmd1.script 2;
+    bindsym 3 mode default, exec addcmd1.script 3;
+    bindsym 4 mode default, exec addcmd1.script 4;
+    bindsym 5 mode default, exec addcmd1.script 5;
+    bindsym 6 mode default, exec addcmd1.script 6;
+    bindsym 7 mode default, exec addcmd1.script 7;
+    bindsym 8 mode default, exec addcmd1.script 8;
+    bindsym 9 mode default, exec addcmd1.script 9;
+    
+    bindsym KP_0 mode default, exec addcmd1.script 0;
+    bindsym KP_1 mode default, exec addcmd1.script 1;
+    bindsym KP_2 mode default, exec addcmd1.script 2;
+    bindsym KP_3 mode default, exec addcmd1.script 3;
+    bindsym KP_4 mode default, exec addcmd1.script 4;
+    bindsym KP_5 mode default, exec addcmd1.script 5;
+    bindsym KP_6 mode default, exec addcmd1.script 6;
+    bindsym KP_7 mode default, exec addcmd1.script 7;
+    bindsym KP_8 mode default, exec addcmd1.script 8;
+    bindsym KP_9 mode default, exec addcmd1.script 9;
+
+    bindsym KP_Decimal mode default, exec addcmd1.script D;
+}
+
+mode "$addcmd2" { 
+    bindsym space mode default
+    bindsym minus scratchpad show
+
+    bindsym 0 mode default, exec addcmd2.script 0;
+    bindsym 1 mode default, exec addcmd2.script 1;
+    bindsym 2 mode default, exec addcmd2.script 2;
+    bindsym 3 mode default, exec addcmd2.script 3;
+    bindsym 4 mode default, exec addcmd2.script 4;
+    bindsym 5 mode default, exec addcmd2.script 5;
+    bindsym 6 mode default, exec addcmd2.script 6;
+    bindsym 7 mode default, exec addcmd2.script 7;
+    bindsym 8 mode default, exec addcmd2.script 8;
+    bindsym 9 mode default, exec addcmd2.script 9;
+    
+    bindsym KP_0 mode default, exec addcmd2.script 0;
+    bindsym KP_1 mode default, exec addcmd2.script 1;
+    bindsym KP_2 mode default, exec addcmd2.script 2;
+    bindsym KP_3 mode default, exec addcmd2.script 3;
+    bindsym KP_4 mode default, exec addcmd2.script 4;
+    bindsym KP_5 mode default, exec addcmd2.script 5;
+    bindsym KP_6 mode default, exec addcmd2.script 6;
+    bindsym KP_7 mode default, exec addcmd2.script 7;
+    bindsym KP_8 mode default, exec addcmd2.script 8;
+    bindsym KP_9 mode default, exec addcmd2.script 9;
+
+    bindsym KP_Decimal mode default, exec addcmd2.script D;
+}
+
+# $addcmd3 thru $addcmd8 are left as exercise for the developer.
+
+mode "$addcmd9" {
+    bindsym space mode default
+    bindsym minus scratchpad show
+
+    bindsym 0 mode default, exec addcmd9.script 0;
+    bindsym 1 mode default, exec addcmd9.script 1;
+    bindsym 2 mode default, exec addcmd9.script 2;
+    bindsym 3 mode default, exec addcmd9.script 3;
+    bindsym 4 mode default, exec addcmd9.script 4;
+    bindsym 5 mode default, exec addcmd9.script 5;
+    bindsym 6 mode default, exec addcmd9.script 6;
+    bindsym 7 mode default, exec addcmd9.script 7;
+    bindsym 8 mode default, exec addcmd9.script 8;
+    bindsym 9 mode default, exec addcmd9.script 9;
+
+    bindsym KP_0 mode default, exec addcmd9.script 0;
+    bindsym KP_1 mode default, exec addcmd9.script 1;
+    bindsym KP_2 mode default, exec addcmd9.script 2;
+    bindsym KP_3 mode default, exec addcmd9.script 3;
+    bindsym KP_4 mode default, exec addcmd9.script 4;
+    bindsym KP_5 mode default, exec addcmd9.script 5;
+    bindsym KP_6 mode default, exec addcmd9.script 6;
+    bindsym KP_7 mode default, exec addcmd9.script 7;
+    bindsym KP_8 mode default, exec addcmd9.script 8;
+    bindsym KP_9 mode default, exec addcmd9.script 9;
+
+    bindsym KP_Decimal mode default, exec addcmd9.script D;
+}
+
+# ---------------------------------------------------------------- #
+
+#
+# This fourth block of 100 double-digit keypresses is the skeleton of the enter command
+
+set     $NTR ntr command number --
+set $ntrcmd0 ntr command number 0-
+set $ntrcmd1 ntr command number 1-
+set $ntrcmd2 ntr command number 2-
+set $ntrcmd3 ntr command number 3-
+set $ntrcmd4 ntr command number 4-
+set $ntrcmd5 ntr command number 5-
+set $ntrcmd6 ntr command number 6-
+set $ntrcmd7 ntr command number 7-
+set $ntrcmd8 ntr command number 8-
+set $ntrcmd9 ntr command number 9-
+
+# Modifier key bindings will become increasingly cumbersome. We used
+# left Super and left Alt for $ADD and here we can use left Super and
+# lwft Control for $NTR; it doesn't matter if used xkb to swap Control
+# and Alt or not, we can always swap them here or not. Both modifiers
+# are adjacent in both $ADD and $NTR hence can be pressed together
+# with a fat finger or thumb.# If you are daft wnough to build more
+# than the two workspace tables and the two command tables, modifiers
+# will bite you.
+
+
+# We are used to thw literal "Shift" as a modifier, here we use the
+# literal "Control" as a modifier. Based on a hunch that's what you
+# must do, confirmed by testing.
+
+bindsym Control+$mod+0 mode "$ntrcmd0"
+bindsym Control+$mod+1 mode "$ntrcmd1"
+bindsym Control+$mod+2 mode "$ntrcmd2"
+bindsym Control+$mod+3 mode "$ntrcmd3"
+bindsym Control+$mod+4 mode "$ntrcmd4"
+bindsym Control+$mod+5 mode "$ntrcmd5"
+bindsym Control+$mod+6 mode "$ntrcmd6"
+bindsym Control+$mod+7 mode "$ntrcmd7"
+bindsym Control+$mod+8 mode "$ntrcmd8"
+bindsym Control+$mod+9 mode "$ntrcmd9"
+                    
+mode "$NTR" {
+    bindsym space mode default
+    bindsym minus scratchpad show
+
+    bindsym KP_0 mode "$ntrcmd0"
+    bindsym KP_1 mode "$ntrcmd1"
+    bindsym KP_2 mode "$ntrcmd2"
+    bindsym KP_3 mode "$ntrcmd3"
+    bindsym KP_4 mode "$ntrcmd4"
+    bindsym KP_5 mode "$ntrcmd5"
+    bindsym KP_6 mode "$ntrcmd6"
+    bindsym KP_7 mode "$ntrcmd7"
+    bindsym KP_8 mode "$ntrcmd8"
+    bindsym KP_9 mode "$ntrcmd9"
+    bindsym KP_Decimal nop
+
+    bindsym KP_Divide   mode "$DIV"
+    bindsym KP_Subtract mode "$SUB"
+    bindsym KP_Add      mode "$ADD"
+    bindsym KP_Enter nop
+}
+bindsym KP_Enter mode "$NTR"
+
+# ---------------------------------------------------------------- #
+
+# Finally we have a neat and tidy table ready to be scripted.
+
+mode "$ntrcmd0" {
+    bindsym space mode default
+    bindsym minus scratchpad show
+
+    bindsym 0 mode default, exec ntrcmd0.script 0;
+    bindsym 1 mode default, exec ntrcmd0.script 1;
+    bindsym 2 mode default, exec ntrcmd0.script 2;
+    bindsym 3 mode default, exec ntrcmd0.script 3;
+    bindsym 4 mode default, exec ntrcmd0.script 4;
+    bindsym 5 mode default, exec ntrcmd0.script 5;
+    bindsym 6 mode default, exec ntrcmd0.script 6;
+    bindsym 7 mode default, exec ntrcmd0.script 7;
+    bindsym 8 mode default, exec ntrcmd0.script 8;
+    bindsym 9 mode default, exec ntrcmd0.script 9;
+
+    bindsym KP_0 mode default, exec ntrcmd0.script 0;
+    bindsym KP_1 mode default, exec ntrcmd0.script 1;
+    bindsym KP_2 mode default, exec ntrcmd0.script 2;
+    bindsym KP_3 mode default, exec ntrcmd0.script 3;
+    bindsym KP_4 mode default, exec ntrcmd0.script 4;
+    bindsym KP_5 mode default, exec ntrcmd0.script 5;
+    bindsym KP_6 mode default, exec ntrcmd0.script 6;
+    bindsym KP_7 mode default, exec ntrcmd0.script 7;
+    bindsym KP_8 mode default, exec ntrcmd0.script 8;
+    bindsym KP_9 mode default, exec ntrcmd0.script 9;
+}
+
+# ntrcmd1 through ntrcmd8 are left as an exercise...
+
+mode "$ntrcmd9" {
+    bindsym space mode default
+    bindsym minus scratchpad show
+
+    bindsym 0 mode default, exec ntrcmd9.script 0;
+    bindsym 1 mode default, exec ntrcmd9.script 1;
+    bindsym 2 mode default, exec ntrcmd9.script 2;
+    bindsym 3 mode default, exec ntrcmd9.script 3;
+    bindsym 4 mode default, exec ntrcmd9.script 4;
+    bindsym 5 mode default, exec ntrcmd9.script 5;
+    bindsym 6 mode default, exec ntrcmd9.script 6;
+    bindsym 7 mode default, exec ntrcmd9.script 7;
+    bindsym 8 mode default, exec ntrcmd9.script 8;
+    bindsym 9 mode default, exec ntrcmd9.script 9;
+
+    bindsym KP_0 mode default, exec ntrcmd9.script 0;
+    bindsym KP_1 mode default, exec ntrcmd9.script 1;
+    bindsym KP_2 mode default, exec ntrcmd9.script 2;
+    bindsym KP_3 mode default, exec ntrcmd9.script 3;
+    bindsym KP_4 mode default, exec ntrcmd9.script 4;
+    bindsym KP_5 mode default, exec ntrcmd9.script 5;
+    bindsym KP_6 mode default, exec ntrcmd9.script 6;
+    bindsym KP_7 mode default, exec ntrcmd9.script 7;
+    bindsym KP_8 mode default, exec ntrcmd9.script 8;
+    bindsym KP_9 mode default, exec ntrcmd9.script 9;
+}
+
+# ---------------------------------------------------------------- #
+
+### Layout stuff ################
+
+# 4.21. Automatically putting workspaces on specific screens
+# https://i3wm.org/docs/userguide.html#workspace_screen
+
+# Even numbered workspaces go on the left. Odd numbered ones go on the
+# right. If you want to pair workspaces to be side by side pair odd=N
+# and even-N+1. Exceptions are allowed anywhere, that's why this rule
+# is made an explicit list instead of embedded in an algorihm. There
+# is an exception for workspaces 98 and 99 to illustrate this.
+
+
+workspace 00 output $leftop
+workspace 01 output $rightop
+workspace 02 output $leftop
+workspace 03 output $rightop
+workspace 04 output $leftop
+workspace 05 output $rightop
+workspace 06 output $leftop
+workspace 07 output $rightop
+workspace 08 output $leftop
+workspace 09 output $rightop
+
+workspace 10 output $leftop
+workspace 11 output $rightop
+workspace 12 output $leftop
+workspace 13 output $rightop
+workspace 14 output $leftop
+workspace 15 output $rightop
+workspace 16 output $leftop
+workspace 17 output $rightop
+workspace 18 output $leftop
+workspace 19 output $rightop
+
+workspace 20 output $leftop
+workspace 21 output $rightop
+workspace 22 output $leftop
+workspace 23 output $rightop
+workspace 24 output $leftop
+workspace 25 output $rightop
+workspace 26 output $leftop
+workspace 27 output $rightop
+workspace 28 output $leftop
+workspace 29 output $rightop
+
+workspace 30 output $leftop
+workspace 31 output $rightop
+workspace 32 output $lefp
+workspace 33 output $rightop
+workspace 34 output $leftop
+workspace 35 output $rightop
+workspace 36 output $leftop
+workspace 37 output $rightop
+workspace 38 output $leftopr
+workspace 39 output $rightop
+
+workspace 40 output $leftop
+workspace 41 output $rightop
+workspace 42 output $leftop
+workspace 43 output $rightop
+workspace 44 output $leftop
+workspace 45 output $rightop
+workspace 46 output $leftop
+workspace 47 output $rightop
+workspace 48 output $leftopl
+workspace 49 output $rightop
+
+workspace 50 output $leftop
+workspace 51 output $rightop
+workspace 52 output $leftop
+workspace 53 output $rightop
+workspace 54 output $leftop
+workspace 55 output $rightop
+workspace 56 output $leftop
+workspace 57 output $rightop
+workspace 58 output $leftop
+workspace 59 output $rightop
+
+workspace 60 output $leftop
+workspace 61 output $rightop
+workspace 62 output $leftop
+workspace 63 output $rightop
+workspace 64 output $leftop
+workspace 65 output $rightop
+workspace 66 output $leftop
+workspace 67 output $rightop
+workspace 68 output $leftop
+workspace 69 output $rightop
+
+workspace 70 output $leftop
+workspace 71 output $rightop
+workspace 72 output $leftop
+workspace 73 output $rightop
+workspace 74 output $leftop
+workspace 75 output $rightop
+workspace 76 output $leftop
+workspace 77 output $rightop
+workspace 78 output $leftop
+workspace 79 output $rightop
+
+workspace 80 output $leftop
+workspace 81 output $rightop
+workspace 82 output $leftop
+workspace 83 output $rightop
+workspace 84 output $leftop
+workspace 85 output $rightop
+workspace 86 output $leftop
+workspace 87 output $rightop
+workspace 88 output $leftop
+workspace 89 output $rightop
+
+workspace 90 output $leftop
+workspace 91 output $rightop 
+workspace 92 output $leftop
+workspace 93 output $rightop
+workspace 94 output $leftop
+workspace 95 output $rightop
+workspace 96 output $leftop
+workspace 97 output $rightop
+workspace 98 output $spareop
+workspace 99 output $spareop
+
+
+### ASSIGNING WORKSPACES (without using assign, experimental.)
+
+# There should be no need to "assign" an app to a workspace because we
+# have been binding(?) apps to workspaces in "workspace.script". There
+# are cases which require "assign", and rules should be broken anyway.
+
+### AUTOTILING IS FANTASTIC (instead of uncomfortable split commands)
+
+# You could "split" the current object of your focus with $mod+b or
+# $mod+v, for horizontal and vertical splits respectively. We could
+# use $mod+h instead of $mod+b for splith whenever we decide upon IJKL
+# cursorkeys but "we can't please all of the people all of the time".
+# Indeed, ellathecat doesn't use any split bindings.
+
+### bindsym $mod+b splith
+### bindsym $mod+v splitv
+
+# If, like ellathecat, you feel uncomfortable splitting windows,
+# running the autotiling utility lets i3/sway take over the
+# responsibiliy. It's not full dynamic windowing some might say but
+# it's adequate.
+
+set $autotiles $SWAY_SCRIPTS_DIR/autotiling
+exec_always $autotiles
+
+# It's OK to launch the application (written in Python) while an
+# instance is running. It seems robust, it just keeps going!
+
+# https://github.com/nwg-piotr/autotiling
+
+# Switch the current container between different layout styles.
+# D is popular so I've changed to tow modifiers Alt and Super
+bindsym $alt+$mod+s layout stacking
+bindsym $alt+$mod+w layout tabbed
+bindsym $alt+$mod+e layout toggle split
+bindsym $alt+$mod+d layout default 
+
+# Toggle container between being tiled and floating.
+bindsym Shift+$mod+space floating toggle
+# Swap focus between only tiled and only floating.
+bindsym $mod+space focus mode_toggle
+
+# We have been dictating that all modes should bind the space key to
+# select default mode, without exception. Should we ever need to bind
+# space to something else, we will bind $mod+space to default mode,
+# but IT WON'T clash with the default mode_toggle binding above.
+
+# Move the currently focused window to the scratchpad,
+bindsym Shift+$mod+minus move scratchpad
+
+### APPEARANCES (following i3 conventions)
+
+# Defaults changed to better distinguish are:
+# 1. white title bar green text when focused.
+# 2. green title bar white text when focused inactive,
+# 3. black title bar  grey text when unfocused
+
+# class | border | background | text | indicator | child_border
+
+# The indicator is made bright yellow for manual tiling, if autotiling
+# is enabled setting it to the Child border makes it unobtrusive.
+
+# Syntax highlighting in (my) emacs doesn't like literal hex constants
+# in the table below, hence use dollar variables.
+
+set $indicator  #cccc44
+set $borders    #666666
+set $black      #000000
+set $palegray   #aaaaaa
+set $white      #ffffff
+set $red        #aa0000
+set $green      #006600
+set $blue       #000044
+set $magenta    #440044
+
+# It can be that the white background of a focused apps's title bar
+# matches the background of the app's global menu. We dim/tint the
+# "whyte" title bar background slightly for contrast, and it looks
+# very nice.
+
+set $whyte      #ddddff
+
+client.focused          $borders $whyte $green     $indicator $borders
+client.focused_inactive $borders $green $white     $indicator $borders
+client.unfocused        $borders $black $palegray  $indicator $borders
+client.urgent           $borders $red   $white     $indicator $borders
+client.placeholder      $borders $white $magenta   $indicator $borders
+client.background       $white
+
+### font pango:monospace 8
+### font pango:DejaVu Sans Mono 8
+# Font for a.o. window titles, bar. I think it was the only font back
+# in the day.
+font "pango:DejaVu Sans 10"
+
+# STATUS BARS
+
+# Bleah! Prevent the colourful Fedora status bar from appearing.
+exec echo -n > "$HOME/.config/sway/config.d/90-bar.conf"
+  
+# Ella's desktop has three monitors side-by-side. There are three
+# status bars, along the top edge of each output.  A status bar can be
+# on the top or bottom edge of an output, zero one or both edges xan
+# host a status bar.
+
+# Bar has Binding Mode Indicator Black on Yellow, Workspace Tabs
+# (buttons), one for each workspace on that output, using standard
+# features, with custom CPU temperature and fan speed, wallclock
+# calendar in simple text. Note if the fan speed is constant without
+# jitter, this indicates a possible kernel crash!
+
+# THe three outputs. Dollar names used here differ from those used
+# elsewhere in this config but as defensive programming only.
+set  $sbfirst VGA-1
+set $sbsecond HDMI-A-1
+set  $sbthird HDMI-A-2
+
+# Background colours for six status bar positions. I've made them
+# tinted and translucent, all the same, to avoid headaches.
+
+set $upperspare  #333333aa
+set $lowerspare  #333333aa
+set $upperleft   #333333aa
+set $lowerleft   #333333aa
+set $upperright  #333333aa
+set $lowerright  #333333aa
+
+# A modifier key for each of six status bars visibility togglee.
+# My head hurts so they are all Alt/Mod1 and untested.
+set $mod0 Mod1
+set $mod1 Mod1
+set $mod2 Mod1
+set $mod3 Mod1
+set $mod4 Mod1
+set $mod5 Mod1
+
+# Colours with French names to distinguish the status bar related
+# values. Pretentious, moi?
+set $blanc #ffffff
+set $rouge #882222
+set $vert  #226622
+set $bleu  #222266
+set $jaune #ffff00
+set $gris  #222222
+set $noir  #000000
+
+bar {
+    output $sbfirst
+    tray_output $sbfirst
+    tray_padding 4 px
+
+    mode dock
+    hidden_state hide
+    modifier $mod0
+
+    font pango:DejaVu Sans 10
+    position bottom
+    binding_mode_indicator yes
+    colors {
+        statusline $blanc
+        background $upperleft
+        binding_mode $jaune $jaune $noir
+        urgent_workspace $rouge $rouge $blanc
+        focused_workspace $blanc $blanc $vert
+        active_workspace $bleu $bleu $blanc
+        inactive_workspace $gris $gris $blanc
+    }
+    workspace_buttons yes
+    workspace_min_width 40
+    strip_workspace_name no
+
+    pango_markup enabled
+    swaybar_command swaybar
+    status_command while ${HOME}/.config/sway/scripts.d/statusbars.script; do sleep 2; done
+}
+
+bar {
+    output $sbsecond
+    tray_output $sbsecond
+    tray_padding 4 px
+
+    mode dock
+    hidden_state hide
+    modifier $mod1
+
+    font pango:DejaVu Sans 10
+    position bottom
+    binding_mode_indicator yes
+    colors {
+        statusline $blanc
+        background $upperspare
+        binding_mode $jaune $jaune $noir
+        urgent_workspace $rouge $rouge $blanc
+        focused_workspace $blanc $blanc $vert
+        active_workspace $bleu $bleu $blanc
+        inactive_workspace $gris $gris $blanc
+    }
+    workspace_buttons yes
+    workspace_min_width 40
+    strip_workspace_name no
+
+    pango_markup enabled
+    swaybar_command swaybar
+    status_command while ${HOME}/.config/sway/scripts.d/statusbars.script; do sleep 2; done
+}
+
+
+bar {
+    output $sbthird
+    tray_output $sbthird
+    tray_padding 4 px
+
+    mode dock
+    hidden_state hide
+    modifier $mod2
+
+    font pango:DejaVu Sans 10
+    position bottom
+    binding_mode_indicator yes
+    colors {
+        statusline $blanc
+        background $upperright
+        binding_mode $jaune $jaune $noir
+        urgent_workspace $rouge $rouge $blanc
+        focused_workspace $blanc $blanc $vert
+        active_workspace $bleu $bleu $blanc
+        inactive_workspace $gris $gris $blanc
+    }
+    
+    workspace_buttons yes
+    workspace_min_width 40
+    strip_workspace_name no
+
+    pango_markup enabled
+    swaybar_command swaybar
+    status_command while ${HOME}/.config/sway/scripts.d/statusbars.script; do sleep 2; done
+}
+
+### GOODIES MENU BAR
+
+# A horizontal banner menu anchored to the top or bottom edge of the
+# active output. $mod+f12 toggles between shown and being hidden.  See the
+# file "goodies.script" for explanations, excuses, etc. The X at the
+# right is used to remove spurious copies of the goodies banner when
+# debugging.
+bindsym      f12 exec $SWAY_SCRIPTS_DIR/goodies.script
+bindsym $mod+f12 exec $SWAY_SCRIPTS_DIR/goodies.script
+# Having done the configuration constants we use scripts to perform
+# sequential configuration step-by-step. A script can mix exec and
+# exec_always but it gets messy fast. One script for exec, another
+# for exec_always is better.
+exec $SWAY_SCRIPTS_DIR/setup.script
+
+### f12 or $mod+f12? BOTH!###
+
+# The f12 key is in a comfortable place. That's why some dropdown
+# terminals choose f12 as their magic key. Sure, we can ask users to
+# change that but their muscle memory will object. This config now
+# uses $mod+f12 by default. That said, our PopUp terminals use
+# scrratchpad bindings, so f12 is only reserved for those using tilda,
+# yakuake,etc., and given their minority they can unbind f12 which we
+# have bound to the same command as $mod+f12. Yes, $mod+FunctionKey is
+# a valid keysym.
+
+### POPUPTOOLS TIDYING UP (see "goodies.script" popuptools() comment)
+
+for_window [title="LHS PopUp Terminal" floating] \
+	   move position 8 px 100 px, resize set width 720 px height 900 px;
+for_window [title="RHS PopUp Terminal" floating] \
+	   move position 968 px 100 px, resize set width 720 px height 900 px;
+for_window [title="Volume Control"     floating] \
+	   move position center, resize set width 960 px height 540 px;
+
+ 
+### TYPING COMMANDS IS EASY WITH HISTORY 
+### (This could improve your productivity.)
+
+# Imagine,  you  are at  a  terminal,  trying  to remember  an  arcane
+# command. You type a few characters  and scroll up. You are presented
+# with commands that match at the start the characters you typed. You
+# choose  one command  that  looks promising.  As  you {type,  scroll,
+# choose} the  commands presented  to you get  longer and  fewer, unil
+# there it is, the  command you typed two years ago.  You press Enter.
+
+# Example: There is no binding for rename workspace. 
+
+# rename workspace [<old_name>] to <new_name>
+# Rename either <old_name> or the focused workspace to the <new_name>
+# sway "rename 13 to 23"
+
+# Use a Popup Terminal to rename workspaces (our double digits are
+# names) with swaymsg.  Typing 'r' 'e' 'n' gets you a 'rename
+# workspace' command, change one or two double digit numbers and
+# you're done.
+
+# This applies to many commands (not just rename) and typing should be
+# easier than  having bindings with  parameters (because you are  in a
+# bash  shell with  history  you can  recall  commands quickly).   See
+# "inputrc.script" for how to setup your bash shell to do this.
+
+### SWAYMSG
+
+# Because we are using a bash shell to enter i3/sway configuration
+# language commands many commands begin
+
+# swaymsg "exec ..." =or= swaymsg "..."
+
+# "swaymsg" can be replaced by "sway" out of the box. An alias could
+# be one character, several aliases would allow options to be included
+# in aliases. The double quotes around the rest of the command ca be
+# inserted programmatically
+
+# This is for discussion.
+
+# LOADING CONFIGS
+
+# (This section originally written by Sway team, edited but not
+# necessarily read or understood or implemented by ellathecat, sorry
+# for my ignorance.) FWIW ellathecat has implemented the stuff between
+# the rows of === below to disable the default status bar from Fedora.
+
+# Include configs from 3 locations:
+#  - /usr/share/sway/config
+#  - /etc/sway/config.d
+#  - $XDG_CONFIG_HOME/sway/config.d ($HOME/.config/sway/config.d)
+#  
+# If multiple directories contain the files with the same name, the
+# later directory takes precedence;
+# `$XDG_CONFIG_HOME/sway/config.d/20-swayidle.conf` will always be
+# loaded instead of `/usr/share/sway/config.d/20-swayidle.conf` or
+# `/etc/sway/config.d/20-swayidle.conf`
+#
+# This mechanism permits overriding our default configuration per-system
+# (/etc) or per-user ($XDG_CONFIG_HOME) basis. Just create the file you
+# want to modify/override in the higher-level directory.
+#
+# ================================================================
+# For example, to disable the default bar from Fedora configs, you'll
+#     need to $ echo -n > "$HOME/.config/sway/config.d/90-bar.conf"
+# #================================================================
+
+# Note the quoting, the $() and the arguments quoting. All the parts
+# are equally important to make the magic work. And if you want to
+# learn the secret behind the trick, it's all in the `wordexp(3)`.
+#
+include '$(/usr/libexec/sway/layered-include "/usr/share/sway/config.d/*.conf" "/etc/sway/config.d/*.conf" "${XDG_CONFIG_HOME:-$HOME/.config}/sway/config.d/*.
+
+#
+# Done.
+#
+
