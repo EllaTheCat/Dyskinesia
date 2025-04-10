@@ -1,0 +1,84 @@
+#!/bin/bash
+# addcmd0.script
+
+### IMPORTANT NOTE ABOUT ALL OF THESE COMMAND SCRIPTS ! ============== #
+
+# This script is the definitive template for addcmd and ntrcmd. It's
+# not used for KP_ADD $cmd0 because that has been hardcoded with
+# opacity commands as an example of defining bash commands in "config"
+# (it's sub-optimal[1]). When you are ready you should change "config"
+# to use this script and change this script accordingly.
+
+# [1]: It's sub-optimal because you could be defining commands in this
+# bash script instead of using i3/sway config syntax. Worse still,
+# each time you edit "config" you run the risk of your Parkinson's
+# induced [2] typos fatally corrupting any of over 1500 lines of code;
+# conversely when editing the addcmsd0.script (or 19 similar command
+# scripts) typo damage is confined to ~40 lines and likely to be
+# visible on screen. Furthermore, ShellCheck will catch many typos.
+
+# [2] This is still advantageous if you don't have Parkinson's. I do,
+# and maintaining that config typo-free is quite difficult.
+
+# There are 20 (twenty) of these command scripts, 10 (ten) for each of
+# $ADDCMD and $NTRCMD, and to avoid a maintenance nightmare, the large
+# boilerplate comments that would apply to commmon code are judged
+# more dangerous than helpful and are therefore omitted from the other
+# (19) command scripts and are restricted to this one, which is
+# hopefully read first.
+
+# NEVERTHELESS PLEASE consider including comments for command
+# invocations whenever they are useful, or neessary attrbution, links
+# to github, whatever, and despite the code being "something personal
+# so you won't forget how it works" (famous last words).
+
+### IMPORTANT NOTE ENDS ============================================== #
+
+# These names and values, but not their syntax, should track those in
+# the eponymous section of the SWAY_CONFIG_FILE. Config variables are
+# not shell variables.
+
+### SOME IMPORTANT EARLY DECLARATIONS
+export SWAY_CONFIG_FILE=${HOME}/.config/sway/config
+export SWAY_CONFIG_DIR=${HOME}/.config/sway/config.d
+export SWAY_SCRIPTS_DIR=${HOME}/.config/sway/scripts.d
+export SWAY_ASSETS_DIR=${HOME}/.config/sway/assets.d
+
+function addcmd0
+{
+    digit=$1
+    case "$digit" in
+	(0)
+	;;
+	(1)
+	;;
+	(2)
+	;;
+	(3)
+	;;
+	(4)
+	;;
+	(5)
+	;;
+	(6)
+	;;
+	(7)
+	;;
+	(8)
+	;;
+	(9)
+	;;
+	(D)
+	;;
+    esac
+}
+
+# Start here.
+# keysym -> exec addcmd0.script N -> addcmd0(N)
+name=$(basename $0)
+func=${name/.script/}
+$func $1
+
+#
+# Done.
+#

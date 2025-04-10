@@ -1,0 +1,75 @@
+#!/bin/bash
+# moidify-swaybg.script
+# You have 6 images and 3 outputs, change the mapping.
+# Called from $SWAY_CONFIG_FILE with exec_always
+
+### SOME IMPORTANT EARLY DECLARATIONS
+
+# These names must track the names listed in the eponymous section
+# inside SWAY_CONFIG_FILE. Config variables are not shell variables.
+export SWAY_CONFIG_FILE=${HOME}/.config/sway/config
+export SWAY_CONFIG_DIR=${HOME}/.config/sway/config.d
+export SWAY_SCRIPTS_DIR=${HOME}/.config/sway/scripts.d
+export SWAY_ASSETS_DIR=${HOME}/.config/sway/assets.d
+
+case "${1:-0}" in
+    (0|eye|reset)
+	# The panorama we show by default is applied.
+	cd ${SWAY_ASSETS_DIR}
+	cp London_Eye/09600-1.jpg swaybg1.jpg
+	cp London_Eye/09600-2.jpg swaybg2.jpg
+	cp London_Eye/09600-3.jpg swaybg3.jpg
+	sway "reload"
+	;;
+    (D|alt)
+	# Alternatively arbitrary images are applied.
+	cd ${SWAY_ASSETS_DIR}
+	cp Alt/swaybg1.jpg swaybg1.jpg
+	cp Alt/swaybg2.jpg swaybg2.jpg
+	cp Alt/swaybg3.jpg swaybg3.jpg
+	sway "reload"
+	;;
+    (4|left)
+	# Barrel roll the list of arbitrary images to the left in
+	# order to align an image with an output.
+	cd ${SWAY_ASSETS_DIR}
+	mv Alt/swaybg1.jpg Alt/swaybg0.jpg
+	mv Alt/swaybg2.jpg Alt/swaybg1.jpg
+	mv Alt/swaybg3.jpg Alt/swaybg2.jpg
+	mv Alt/swaybg0.jpg Alt/swaybg3.jpg
+	;;
+    (6|right)
+	# Barrel roll the list of arbitrary images to the right in
+	# order to align an image with an output.
+ 	cd ${SWAY_ASSETS_DIR}
+	mv Alt/swaybg3.jpg Alt/swaybg0.jpg
+	mv Alt/swaybg2.jpg Alt/swaybg3.jpg
+	mv Alt/swaybg1.jpg Alt/swaybg2.jpg
+	mv Alt/swaybg0.jpg Alt/swaybg1.jpg
+	;;
+    (1)
+	# Show one of the arbitary images on output 1.
+	cd ${SWAY_ASSETS_DIR}
+	cp Alt/swaybg1.jpg swaybg1.jpg
+	;;
+    (2)
+	# Show one of the arbitary images on output 2.
+	cd ${SWAY_ASSETS_DIR}
+	cp Alt/swaybg2.jpg swaybg2.jpg
+	;;
+    (3)
+	# Show one of the arbitary images on output 3.
+	cd ${SWAY_ASSETS_DIR}
+	cp Alt/swaybg3.jpg swaybg3.jpg
+	;;
+    (5|apply)
+	# There are bindngs for this alresdy, but for completeness'
+	# sake we add this. Use after a run of concateated changes
+	# each identified by a number in the range [0...6].
+	sway "reload"
+	;;
+esac
+
+#
+# Done
+#

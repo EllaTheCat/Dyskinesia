@@ -1,0 +1,38 @@
+#!/bin/bash
+# addcmd2.script
+
+export SWAY_CONFIG_FILE=${HOME}/.config/sway/config
+export SWAY_CONFIG_DIR=${HOME}/.config/sway/config.d
+export SWAY_SCRIPTS_DIR=${HOME}/.config/sway/scripts.d
+export SWAY_ASSETS_DIR=${HOME}/.config/sway/assets.d
+
+function addcmd2
+{
+    digit=$1
+    case "$digit" in
+       ([0-6])
+	   ${SWAY_SCRIPTS_DIR}/modify-swaybg.script $digit
+	    ;;
+       (D)
+	    ${SWAY_SCRIPTS_DIR}/modify-swaybg.script D
+	    ;;
+       (7)
+	    ;;
+       (8)	
+	    ;;
+       (9)
+	    ;;
+       (D)
+	    ;;
+    esac
+}
+
+
+# Start here.
+name=$(basename $0)
+func=${name/.script/}
+$func $1
+
+#
+# Done.
+#
