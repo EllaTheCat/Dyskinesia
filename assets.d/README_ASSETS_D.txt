@@ -11,10 +11,10 @@ Starting with download of 1)
 5) cropped from 2)
 
 1) https://en.wikipedia.org/wiki/London_Eye#/media/File:London_360%C2%B0_Panorama_from_the_London_Eye.jpg
-2) le09600.jpg 5760x1080
-3) 9600-1      1980x1800+0+0
-4) 9600-2      1980x1080+1920+0
-5) 9600-3      1980x1080+3840+0
+2) le09600.jpg      5760x1080
+3) swaybg1.jpg      1920x1080+0+0
+4) swaybg2.jpg      1920x1080+1920+0
+5) swaybg3.jpg      1920x1080+3840+0
 
 1),2) not used in sway output directives in ~/.config/sway/config 
 3),4),5)  used in sway output directives in ~/.config/sway/config 
@@ -36,13 +36,5 @@ Date 	1 October 2009
 
 File 2) was cropped from 1) by ellathecat, no other changes were made. 
 Files 3),4),5) were cropped from 2) by ellathecat, no other changes were made. 
+ellathecat will provide 2) here in due course, file size 2.2 Mbytes
 
-fuerte.jpg
-
-Alternative to the London Eye photo, fuerte.jpg photo was taken by
-Karl Wood, also licensed under the Creative Commons Attribution 3.0
-Unported license. It may be used in a similar way, its resolution of
-9472x3824 allows cropping to 5760x1080 and provides multiple views.
-
-UPDATE 2025-05-10 Github has a 25Mbyte file size limit and
-"fuerte.jpg" is 43.5 Mbytes.  Be patient.
