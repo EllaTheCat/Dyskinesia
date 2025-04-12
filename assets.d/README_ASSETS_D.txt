@@ -1,6 +1,6 @@
 README_ASSETS.D
 
-le9600.jpg 09600-[123].jpg
+le9600.jpg
 
 Starting with download of 1)
 
@@ -37,4 +37,26 @@ Date 	1 October 2009
 File 2) was cropped from 1) by ellathecat, no other changes were made. 
 Files 3),4),5) were cropped from 2) by ellathecat, no other changes were made. 
 ellathecat will provide 2) here in due course, file size 2.2 Mbytes
+
+20200215_095344.jpg (41.5 MB)
+
+An alternative backdrop source. A beach in Fuerteventura, Canary Islands. I cannot guarantee the link.
+
+https://e.pcloud.link/publink/show?code=XZgl4WZ6nRteFnlSezgay97mYsWq8qwDhHX
+
+This file, URL immedistely above, is licensed under the Creative Commons Attribution 3.0 Unported license.
+
+     are free:
+
+        to share – to copy, distribute and transmit the work
+        to remix – to adapt the work
+
+    Under the following conditions:
+
+        attribution – You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+
+Author 	Photo by Karl Wood (posting on github and reddit as EllaTheCat)
+Source 	Own work
+Date 	15 February 2020
+
 
