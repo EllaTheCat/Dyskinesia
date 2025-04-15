@@ -1,0 +1,19 @@
+#!/bin/bash
+# disks.script
+# Disk temperature monitor.
+# - Code removed from the status bar because the disk accesses every
+# - two seconds were disturbingly loud, is now standalone code.
+
+### #/dev/sda:SP2504C:37°Cde | sed 's:/dev/::g' | awk '{print $1$4}')
+ 
+sda=$(2>&1 sudo hddtemp /dev/sda | sed 's:/dev/::g' | awk '{print $1$4}')
+sdb=$(2>&1 sudo hddtemp /dev/sdb | sed 's:/dev/::g' | awk '{print $1$4}')
+sdd=$(2>&1 sudo hddtemp /dev/sdd | sed 's:/dev/::g' | awk '{print $1$4}')
+sde=$(2>&1 sudo hddtemp /dev/sde | sed 's:/dev/::g' | awk '{print $1$4}')
+disks="| $sda $sdb $sdd $sde |"
+
+echo "${disks}"
+
+#
+# done
+#

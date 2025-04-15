@@ -15,15 +15,17 @@ cpu=$(sensors | grep fan1 | awk '{print $2}')
 temperature="cpu:${cpucelsius} fan:${cpu}"
 #temperature="<span foreground='yellow/'>$temperature</span>"
 
-#/dev/sda:SP2504C:37°Cde | sed 's:/dev/::g' | awk '{print $1$4}')
+### #/dev/sda:SP2504C:37°Cde | sed 's:/dev/::g' | awk '{print $1$4}')
+ 
+### sda=$(2>&1 sudo hddtemp /dev/sda | sed 's:/dev/::g' | awk '{print $1$4}')
+### sdb=$(2>&1 sudo hddtemp /dev/sdb | sed 's:/dev/::g' | awk '{print $1$4}')
+### sdd=$(2>&1 sudo hddtemp /dev/sdd | sed 's:/dev/::g' | awk '{print $1$4}')
+### sde=$(2>&1 sudo hddtemp /dev/sde | sed 's:/dev/::g' | awk '{print $1$4}')
+### disks="| $sda $sdb $sdd $sde |"
 
-sda=$(2>&1 sudo hddtemp /dev/sda | sed 's:/dev/::g' | awk '{print $1$4}')
-sdb=$(2>&1 sudo hddtemp /dev/sdb | sed 's:/dev/::g' | awk '{print $1$4}')
-sdd=$(2>&1 sudo hddtemp /dev/sdd | sed 's:/dev/::g' | awk '{print $1$4}')
-sde=$(2>&1 sudo hddtemp /dev/sde | sed 's:/dev/::g' | awk '{print $1$4}')
-disks="| $sda $sdb $sdd $sde |"
+### echo "${temperature} ${disks} ${clock}"
 
-echo "${temperature} ${disks} ${clock}"
+echo "${temperature} ${clock}"
 exit 0
 
 # Done.
