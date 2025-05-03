@@ -18,17 +18,20 @@ sleep 1
 ### INSTALL POPUPTOOLS
 # Destroy all current popuptools and then install the two PopUp Terminals and
 # the Volume Control on the scratchpad.
-swaymsg "exec \"${SWAY_SCRIPTS_DIR}/goodies.script popuptools\""
+swaymsg "exec \"${SWAY_SCRIPTS_DIR}/goodies.script popuptools\"" ; sleep 2s
 
 ### INSTALL WORKSPACES
-# BpyTOP, VLCx2  Firefox, Files, Emacs. The sleep delays were
-# tuned to keep each app on its associated workspace.
+# BpyTOP, VLCx2 Firefox, Files, Terminals, Emacs, Terminals. The sleep
+# delays were tuned to keep each app on its associated workspace.
 swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 97\"" ; sleep 5s ;
 swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 89\"" ; sleep 3s ;
 swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 88\"" ; sleep 7s ;
 swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 55\"" ; sleep 9s ;
+swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 69\"" ; sleep 5s ;
 swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 44\"" ; sleep 5s ;
-swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 33\"" ; sleep 5s ;
+swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 43\"" ; sleep 9s ;
+swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 33\"" ; sleep 9s ;
+swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 32\"" ; sleep 9s ;
 
 ### INITIALISE EXTRA USER DISK DRIVES.
 #
@@ -59,3 +62,4 @@ swaymsg "exec 'rofi -show combi -combi-modes window\#drun -modes'"
 #
 # Done
 #
+

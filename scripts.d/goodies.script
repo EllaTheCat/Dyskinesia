@@ -160,40 +160,29 @@ function popuptools
 
     # These cases, with the exception of (*), are all DEPRECATED
     # because they are seldom used and hence subject to bitrot.
-    # There's at least one example already.
 
     # kgx is the gnome 47 "Console" app, it's nice and simple with
     # tabs that dropdown users expect.
     case "${1:-'all'}" in
 	('lhs')
-	    # This case is DEPRECATED.
-	    sway '[title="LHS PopUp Terminal" ] kill'
-	    sway "exec rofi-sensible-terminal  --title=\"LHS PopUp Terminal\""
-	    sway "[title=\"LHS PopUp Terminal\"] move scratchpad"
+	# This case is DEPRECATED.case 
 	    ;;
 	('rhs')
 	    # This case is DEPRECATED.
-	    sway '[title="RHS PopUp Terminal" ] kill'
-	    sway "exec rofi-sensible-terminal  --title=\"RHS PopUp Terminal\""
-	    sway "title=\"RHS PopUp Terminal\"] move scratchpad"
 	    ;;
 	('vol')
-
 	    # This case is DEPRECATED.
-.	    sway '[title="Volume Control"] kill'
-	    sway "exec pavucontrol"
-	    sleep 1s
-	    sessway "[title=\"Volume Control\"] move scratchpad"
 	    ;;
 	(*)
 	    # This case is unconditional without the three deprecated
-	    # cases. Any extsnt popups are killed before all popups
+	    # cases. Any surviving popups are killed before all popups
 	    # are invoked once more.
 	    sway '[title="PopUp Terminal"] kill'
 	    sway '[title="Volume Control"] kill'
 	    sway "exec kgx --title=\"LHS PopUp Terminal\""  
 	    sway "exec kgx --title=\"RHS PopUp Terminal\""
-	    sway "exec pavucontrol"
+	    # Fedora Sway spin has pavucontrol and pavucontrol-qt.
+	    sway "exec pavucontrol-qt"
 	    sleep 1s
 	    # Each popup instance is made floating before being moved
 	    # to the scratchpad in order that it will appear in front

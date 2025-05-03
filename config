@@ -1,5 +1,4 @@
-
-# -*- Mode: shell-script -*-
+# -*- MODE: shell-script -*-
 ### ellathecat's comment-heavy config for sway on two or three
 ### HD monitors.
 
@@ -63,10 +62,18 @@ bindsym $mod+Tab    exec foot
 # Show the next scratchpad window OR hide the currently visible one
 # ready to show the next one on the next keypress.
 bindsym $mod+minus scratchpad show
+bindsym Left+Up scratchpad show
+bindsym Alt+slash scratchpad show
 
-# Look inside modes for bindings to this command AND look at the top
-# of the winapp menu for popup windows. You may be able to get to a
-# popup terminal or volume control faster.
+# Footnote: the second binding is to the Left and Up arrow keys
+# pressed together; it's "one-hand operation friendly" (the right)
+# unlike the first whivh needs two hands if you only have Super_L but
+# not Super_R. Look inside modes for bindings to this command AND look
+# at the top of the winapp menu for popup windows. You may be able to
+# get to a popup terminal or volume control faster. The third binding
+# attempts to use the same keys when they do not generate the Left and
+# Up arrow keysyms but Alt and / - the user has to press Alt like a
+# modifier.
 
 # You can rebuild the popups at any time via the menu on the green
 # banner managed by 'goodies.script'. For example you'd lose a
@@ -237,12 +244,16 @@ bindsym slash+Menu $winappsmenu
 # We bound Up+Down to $winappsmenu because the keys are easy to
 # operate right-handed. We have two more arrow key pairs available.
 
-# 1) The standard binding for scratchpad show is two-handed hence
-# cumbersome; we add this because again the keys are easy to operate
-# right-handed.
-bindsym Left+Up scratchpad show
-# 2) Reserved for the user to bind as desired.
-bindsym Up+Right nop
+# We bound Left+Up to "scratchpad show" when we bound $mod+equals to
+# "scratchpad show" earlier. We also bound Alt+slash, noting that it
+# works like a modifier.
+
+# We reserve Up+Right for the user to bind as desired. We must also
+# bind Control+slash, the keysyms generated when not generating arrrow
+# keysyms.  We bind to something that can confirm the binding works.
+
+bindsym Up+Right        exec speak-ng "quack"
+bindsym Control+slash   exec speak-ng "quack"
 
 ### BINDING MODE INDICATOR (BMI)
 
@@ -582,17 +593,10 @@ set $rightop VGA-1
 
 # If you are willing to have only the keypad bindng rewrite to replace
 # KP_0 to KP_9 with 0 to 9, and are prepared to very carefully decide
-# which modified keys are to replace { KP_Divide KP_Multiply
-# KP_Subtract KP_Add } then we suggest function keys or $mod+1 $mod+2
-# $mod+3 $mod+4 (remember we only have this set of bindings).
+# which modified keys are to replace { KP_Divide KP_Multiply KP_Add
+# KP_Ebter} then we suggest function keys, noting that the function
+# keys on a 60% compact mechanical keyboard are Fn+1,Fn+2,Fn+3,Fn+4.
 
-# Standalone USB numeric keypads are a thing.
-
-# visit-workspace.config
-
-# -------------------------------------------
-
-# Binding mode indicator texts - must be unique.
 
 set $ws0 [visit] ws 0-
 set $ws1 [visit] ws 1-
@@ -1411,24 +1415,22 @@ mode "$cws9" {
 # ---------------------------------------------------------------- #
 
 #
-# This third block of 100 double-digit keypressses has nothing to do
+# This third block of 100 double-digit keypresses has nothing to do
 # with workspaces.  2025-02-09: Delegating the commands to little
 # scripts, each responsible for a mode's worth of commands, typically
-# bound to the ten digits and the deciml point
+# bound to the ten digits and the decimal point.
 
-# Two adjacent modifiers, Mod4 and Mod1, Super_L and Alt are shown
-# here as examples, but multiple modifiers are becomingt cumberome, so
-# we fall back to using the numeric keypad bindings only.
+# Two adjacent modifiers, Mod4 and Mod1, (Super_L and Alt), are shown
+# here. There will be a fourth block of 100 double-digit keypresses,
+# that will also use two adjacent modifiers, Mod4 and Control (Super_L
+# and Control). Both blocks use two of the three modifiers to the left
+# of the space bar.
 
 # Laptop users without a numpad, be creative and use the main number
-# keys as digits and (foe example) {F1 F2 F3 F4} instead of KP_/ KP_*
-# KP_+ KP_\n} Henceforth we refer to {KP_DIV, KP_MUL, ...}
-
-# If you use the numeric keypad bindings the default prefixes for
-# KP_DIV and KP_MUL are gone so use KP_+ alias KP_ADD, it is as
-# equally as large as they.  If we have KP_ADD we might as well have
-# the equally large KP_Enter for a second table of commands, alias
-# KP_NTR.
+# keys as digits and (for example) {F1 F2 F3 F4} instead of KP_/ KP_*
+# KP_+ KP_\n} Henceforth we shall refer to those latter four numpad
+# keys as {KP_DIV, KP_MUL, KP_ADD, KP_NTR}; note that they are all
+# double width or double height, and independent of NumLock.
 
 ### KP_DIV KP_MUL KP_ADD KP_NTR are their names. ##################
 
@@ -1459,7 +1461,7 @@ mode "$ADD" {
     bindsym space mode default
     bindsym minus scratchpad show
 
-     bindsym KP_0 mode "$addcmd0"
+    bindsym KP_0 mode "$addcmd0"
     bindsym KP_1 mode "$addcmd1"
     bindsym KP_2 mode "$addcmd2"
     bindsym KP_3 mode "$addcmd3"
@@ -1477,7 +1479,7 @@ mode "$ADD" {
     bindsym KP_Divide   mode "$DIV"
     bindsym KP_Subtract mode "$SUB"
     bindsym KP_Enter    mode "$NTR"
-    # Debounce the mode entry key. Here, that's addcmds.
+    # Debounce the mode entry key.
     bindsym KP_Add nop
 }
 bindsym KP_Add mode "$ADD"
@@ -1485,19 +1487,23 @@ bindsym KP_Add mode "$ADD"
 # ---------------------------------------------------------------- #
 
 # Set the window background opacity. Moving left to right along the
-# entire numbers row from accent grave to zero gives monotonically
-# increasing OPACITY, from fully tranlucent (transparent) to fully
-# opaque. Beware large translucent backgrounds on non-gaming PCs, your
-# CPU might  get hot pushing so many pixels.
+# entire numbers row from 1 to 9 gives monotonically increasing
+# OPACITY, 0 is fully tranlucent (transparent) and . is fully
+# opaque. Note the 11th fencepost for 10 intervalss of 0.1; we have
+# KP_Decimal on the numpad hence period on a keyboard.
+
+# Beware large translucent backgrounds on non-gaming PCs, your CPU
+# might get hot pushing so many pixels.
 #
 mode "$addcmd0" {
      bindsym space mode default
      bindsym minus scratchpad show
 
      # Setting opacity to zero makes objects transparent.
-     # The grave key is one step to the left of the 1 key
-     bindsym grave mode default, opacity 0.0;
+     # Setting opacity to one makes objects fully opaque.
      # Translucent between opacities zero and one.
+
+     bindsym 0 mode default, opacity 0.0;
      bindsym 1 mode default, opacity 0.1; 
      bindsym 2 mode default, opacity 0.2; 
      bindsym 3 mode default, opacity 0.3; 
@@ -1507,14 +1513,9 @@ mode "$addcmd0" {
      bindsym 7 mode default, opacity 0.7;
      bindsym 8 mode default, opacity 0.8;
      bindsym 9 mode default, opacity 0.9;
-     # Setting opacity to one makes objects fully opaque.
-     # The 0 key is one step to the right of the 9 key.
-     bindsym 0 mode default, opacity 1.0;
-
-     # Setting opacity to zero makes objects transparent. 
-     # Unlike the numbers row 0 the 0 key is nearer 1 than 9.
+     bindsym period mode default, opacity 1.0;
+     
      bindsym KP_0 mode default, opacity 0.0;
-     # Translucent between opacities zero and one.
      bindsym KP_1 mode default, opacity 0.1; 
      bindsym KP_2 mode default, opacity 0.2; 
      bindsym KP_3 mode default, opacity 0.3; 
@@ -1524,16 +1525,18 @@ mode "$addcmd0" {
      bindsym KP_7 mode default, opacity 0.7;
      bindsym KP_8 mode default, opacity 0.8;
      bindsym KP_9 mode default, opacity 0.9;
-     # Setting opacity to one makes objects fully opaque.
-     # If KP_0 is opacity 0.0. the . key has to be opacity 1.0.
      bindsym KP_Decimal mode default, opacity 1.0;
 }
 
 # Pattern for commands (other than the simplest like opacity above) is
-# to have one script per mode with typically ten cases, but possibly
-# twenty, depending upon how you treat "digit" and "KP_digit". The
-# script name is derived from the two mode names, the 1st and 2nd of
-# the 3 keypresses.
+# to have one script per mode with typically ten or eleven cases, but
+# possibly twenty or tewnty-two, depending upon how you treat "digit"
+# and "KP_digit". We have chosen to have digits and KP_digits be
+# equivalent, and to support the 11th "digit" KP_Decimal on the
+# numpad, equivalent to '.' (alias dot/fullstop/period) on the main
+# keyboard, for ELEVEN commands per mode. There are TEN modes not
+# eleven, 110 comands per table. The script name is derived from the
+# two mode names, the 1st and 2nd of the 3 keypresses.
 
 mode "$addcmd1" { 
     bindsym space mode default
@@ -1549,6 +1552,7 @@ mode "$addcmd1" {
     bindsym 7 mode default, exec addcmd1.script 7;
     bindsym 8 mode default, exec addcmd1.script 8;
     bindsym 9 mode default, exec addcmd1.script 9;
+    bindsym period mode default, exec addcmd1.script D;
     
     bindsym KP_0 mode default, exec addcmd1.script 0;
     bindsym KP_1 mode default, exec addcmd1.script 1;
@@ -1560,7 +1564,6 @@ mode "$addcmd1" {
     bindsym KP_7 mode default, exec addcmd1.script 7;
     bindsym KP_8 mode default, exec addcmd1.script 8;
     bindsym KP_9 mode default, exec addcmd1.script 9;
-
     bindsym KP_Decimal mode default, exec addcmd1.script D;
 }
 
@@ -1578,6 +1581,7 @@ mode "$addcmd2" {
     bindsym 7 mode default, exec addcmd2.script 7;
     bindsym 8 mode default, exec addcmd2.script 8;
     bindsym 9 mode default, exec addcmd2.script 9;
+    bindsym period mode default, exec addcmd2.script D;
     
     bindsym KP_0 mode default, exec addcmd2.script 0;
     bindsym KP_1 mode default, exec addcmd2.script 1;
@@ -1589,7 +1593,6 @@ mode "$addcmd2" {
     bindsym KP_7 mode default, exec addcmd2.script 7;
     bindsym KP_8 mode default, exec addcmd2.script 8;
     bindsym KP_9 mode default, exec addcmd2.script 9;
-
     bindsym KP_Decimal mode default, exec addcmd2.script D;
 }
 
@@ -1609,6 +1612,7 @@ mode "$addcmd9" {
     bindsym 7 mode default, exec addcmd9.script 7;
     bindsym 8 mode default, exec addcmd9.script 8;
     bindsym 9 mode default, exec addcmd9.script 9;
+    bindsym period mode default, exec addcmd2.script D;
 
     bindsym KP_0 mode default, exec addcmd9.script 0;
     bindsym KP_1 mode default, exec addcmd9.script 1;
@@ -1620,7 +1624,6 @@ mode "$addcmd9" {
     bindsym KP_7 mode default, exec addcmd9.script 7;
     bindsym KP_8 mode default, exec addcmd9.script 8;
     bindsym KP_9 mode default, exec addcmd9.script 9;
-
     bindsym KP_Decimal mode default, exec addcmd9.script D;
 }
 
@@ -1646,12 +1649,11 @@ set $ntrcmd9 ntr command number 9-
 # lwft Control for $NTR; it doesn't matter if used xkb to swap Control
 # and Alt or not, we can always swap them here or not. Both modifiers
 # are adjacent in both $ADD and $NTR hence can be pressed together
-# with a fat finger or thumb.# If you are daft wnough to build more
+# with a fat finger or thumb. If you are daft wnough to build more
 # than the two workspace tables and the two command tables, modifiers
 # will bite you.
 
-
-# We are used to thw literal "Shift" as a modifier, here we use the
+# We are used to the literal "Shift" as a modifier, here we use the
 # literal "Control" as a modifier. Based on a hunch that's what you
 # must do, confirmed by testing.
 
@@ -1707,6 +1709,7 @@ mode "$ntrcmd0" {
     bindsym 7 mode default, exec ntrcmd0.script 7;
     bindsym 8 mode default, exec ntrcmd0.script 8;
     bindsym 9 mode default, exec ntrcmd0.script 9;
+    bindsym period mode default, exec ntrcmd0.script D;
 
     bindsym KP_0 mode default, exec ntrcmd0.script 0;
     bindsym KP_1 mode default, exec ntrcmd0.script 1;
@@ -1718,6 +1721,7 @@ mode "$ntrcmd0" {
     bindsym KP_7 mode default, exec ntrcmd0.script 7;
     bindsym KP_8 mode default, exec ntrcmd0.script 8;
     bindsym KP_9 mode default, exec ntrcmd0.script 9;
+    bindsym KP_Decimal mode default, exec ntrcmd0.script D;
 }
 
 # ntrcmd1 through ntrcmd8 are left as an exercise...
@@ -1733,9 +1737,10 @@ mode "$ntrcmd9" {
     bindsym 4 mode default, exec ntrcmd9.script 4;
     bindsym 5 mode default, exec ntrcmd9.script 5;
     bindsym 6 mode default, exec ntrcmd9.script 6;
-    bindsym 7 mode default, exec ntrcmd9.script 7;
+    bindsym 7 mode default, exec .ntrcmd9.script 7;
     bindsym 8 mode default, exec ntrcmd9.script 8;
     bindsym 9 mode default, exec ntrcmd9.script 9;
+    bindsym period mode default, exec ntrcmd9.script D;
 
     bindsym KP_0 mode default, exec ntrcmd9.script 0;
     bindsym KP_1 mode default, exec ntrcmd9.script 1;
@@ -1747,7 +1752,22 @@ mode "$ntrcmd9" {
     bindsym KP_7 mode default, exec ntrcmd9.script 7;
     bindsym KP_8 mode default, exec ntrcmd9.script 8;
     bindsym KP_9 mode default, exec ntrcmd9.script 9;
+    bindsym KP_Decimal mode default, exec ntrcmd9.script D;
 }
+
+# ---------------------------------------------------------------- #
+
+# Here we reserve four function keys for the main keyboard alternative
+# numpad, just in case someone attempts to (re)bind them, whereupon we
+# will encounter a red nagbar! You can use other unbound function keys
+# if for example you insist on F1 as Help. Remember that 60% keyboards
+# require Fn+<digit> for function keys, this has the ergonomic cost
+# of using a modifier, so you could consider $alt ... (aargh!)
+
+bindsym	f1 mode $KP_DIV
+bindsym	f2 mode $KP_MUL
+bindsym	f3 mode $KP_ADD
+bindsym	f4 mode $KP_NTR
 
 # ---------------------------------------------------------------- #
 
@@ -1762,6 +1782,7 @@ mode "$ntrcmd9" {
 # is made an explicit list instead of embedded in an algorihm. There
 # is an exception for workspaces 98 and 99 to illustrate this.
 
+# TYPO_TAG_101
 
 workspace 00 output $leftop
 workspace 01 output $rightop
@@ -1798,13 +1819,13 @@ workspace 29 output $rightop
 
 workspace 30 output $leftop
 workspace 31 output $rightop
-workspace 32 output $lefp
+workspace 32 output $leftop
 workspace 33 output $rightop
 workspace 34 output $leftop
 workspace 35 output $rightop
 workspace 36 output $leftop
 workspace 37 output $rightop
-workspace 38 output $leftopr
+workspace 38 output $leftop
 workspace 39 output $rightop
 
 workspace 40 output $leftop
@@ -1815,7 +1836,7 @@ workspace 44 output $leftop
 workspace 45 output $rightop
 workspace 46 output $leftop
 workspace 47 output $rightop
-workspace 48 output $leftopl
+workspace 48 output $leftop
 workspace 49 output $rightop
 
 workspace 50 output $leftop
@@ -1873,6 +1894,7 @@ workspace 97 output $rightop
 workspace 98 output $spareop
 workspace 99 output $spareop
 
+# TYPO_TAG_102
 
 ### ASSIGNING WORKSPACES (without using assign, experimental.)
 
@@ -1896,8 +1918,7 @@ workspace 99 output $spareop
 # responsibiliy. It's not full dynamic windowing some might say but
 # it's adequate.
 
-set $autotiles $SWAY_SCRIPTS_DIR/autotiling
-exec_always $autotiles
+exec_always $SWAY_SCRIPTS_DIR/autotiling
 
 # It's OK to launch the application (written in Python) while an
 # instance is running. It seems robust, it just keeps going!

@@ -11,16 +11,31 @@ function addcmd1
     digit=$1
     case "$digit" in
 	# Column9
-	(9|6|3|D)
-	    sway "nop"
+	(9)
+	    sway "exec wl-copy 'ssh 192.168.1.239 sudo poweroff'"
+	    ;;
+	(6)
+	    sway "exec wl-copy 'ssh 192.168.1.239 sudo reboot'".
+	    ;;
+	(3)
+	    sway "exec wtype $(wl-paste)"
+	    ;;
+	(D)
+	    sway "someterminals.script 4 32"
 	    ;;
 	# Column8
-	(8|5|2)
+	(8)
+	    sway "exec ssh rpi4b sudo poweroff"
+	    ;;
+	(5)
+	    sway "exec ssh rpi4b sudo reboot"
+	    ;;
+	(2)
 	    sway "nop"
 	    ;;
 	# Column7
 	(7)
-	   # Change colour temperature according to time of day (toggle).
+	    # Change colour temperature according to time of day (toggle).
 	    if [ $(pgrep -c -f wlsunset) -eq 1 ]; then
 		pkill -f wlsunset
 	    else
@@ -36,7 +51,7 @@ function addcmd1
 	    # Github- https://github.com/Blazzzeee/network_manager_ui
 	    # https://www.reddit.com/r/swaywm/comments/1ivkpop/\
 		# network_manager_ui_plug_and_play_wifi_menu/\
-          		# ?utm_source=share&utm_medium=web3x\
+          	# ?utm_source=share&utm_medium=web3x\
 		# &utm_name=web3xcss&utm_term=1&utm_content=share_button
 	    # This is a special popup menu, press Escape to dismiss.
 	    if [ $(pgrep -c -f network_manager) -eq 0 ]; then
@@ -47,7 +62,7 @@ function addcmd1
 	(0)
 	    # Private.
 	    foot --title="MiniDLNA UPnP server" \
- 	    -e $SWAY_SCRIPTS_DIR/upnp.script &
+ 		 -e $SWAY_SCRIPTS_DIR/upnp.script &
 	    ;;
     esac
 }

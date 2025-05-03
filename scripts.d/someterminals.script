@@ -1,0 +1,158 @@
+#!/bin/bash
+# Some terminals. Deliberately vague about how many is enough to fill a
+# workspace. Autotiling affects the layout/sizes.
+
+# $1 = terminal to run. Defaults to 'foot' if $1 absent or empty string.
+# $2 = defaults to 1 if absent or 0 if zero!
+# IF [$2 -le 24] THEN $2 = number of terminals FI
+# IF [$2 -eq 27] THEN $2 - reserved ESCAPE header FI
+# IF [$2 -ge 30 ] && [ -le 99] THEN tens digit ${2:0} = number of
+# terminals and units digit enumerates a layout eg column,row.square.
+# The "units digit" may use a character as mnemonic eg S for square.
+# IF [$2 25,26,28,29] THEN user defined hyperspace FI
+# $3 = workspace to visit before launching terminal if in range 00->99.
+# NOT ALL PARAMETER VALUES ARE IMPLEMENTED = BE MY GUEST'
+
+# This script is intended to be called directly from
+# "workspace.script" or indirectly from "setup.script". You may call
+# it from a keybinding but it won't have workspace behaviour.
+
+function autolayout
+{
+    if [ $(pgrep -c -f "autotiling" ) -ne 0 ] ; then
+	
+	turm=${1:-foot}
+	ws=${3:-$(swaymsg -p -t get_workspaces |\
+		      grep "focused" | awk '{print $2}')}
+	case "$ws" in
+	    ([0-9][0-9])
+		swaymsg "workspace --no-auto-back-and-forth $ws"
+		sleep 2s
+		;;
+	    (*)
+		# NOT fatal.
+		speak-ng "bad workspace ignored"
+		;;
+	esac
+	
+	case "${2:-1}" in
+	    (4|42)
+		kill-terminals-in-workspace $ws
+		sleep 1.5s
+		swaymsg "exec $turm --title \"${ws} 0\""
+		swaymsg "exec $turm --title \"${ws} 1\""
+		sleep 0.5s
+		swaymsg "[title=\"${ws} 0\"] focus;"
+		swaymsg "exec $turm --title \"${ws} 2\""
+		sleep 0.5s
+		swaymsg "[title=\"${ws} 1\"] focus;"
+		swaymsg "exec $turm --title \"${ws} 3\""
+		;;
+	    (3)
+		swaymsg "exec $turm"
+		swaymsg "exec $turm"
+ 		swaymsg "exec $turm"
+		;;
+	    (2)
+		swaymsg "exec $turm"
+ 		swaymsg "exec $turm"
+		;;
+	    (1)
+		swaymsg "exec $turm"
+		;;
+	    (0)
+		kill-terminals-in-workspace $ws
+		;;
+	    (*)
+		speak-ng "bad request ignored"
+		;;
+	esac
+
+    fi
+}
+
+#
+# Exactly the same $1 $2 $3 $4 as autolayout above.
+# I've done the minimum for when autotiling is disabled.
+#
+function handlayout
+{
+    if [ $(pgrep -c -f "autotiling" ) -eq 0 ]; then
+
+	turm=${1:-foot}
+	ws=${3:-$(swaymsg -p -t get_workspaces |\
+		      grep "focused" | awk '{print $2}')}
+	case "$ws" in
+	    ([0-9][0-9])
+		swaymsg "workspace --no-auto-back-and-forth $ws"
+		sleep 2s
+		;;
+	    (*)
+		speak-ng "bad workspace ignored"	    
+		;;
+	esac
+	
+	case "${2:-1}" in
+	    (4|42)
+		swaymsg "exec $turm --title \"[${ws}\.0]\""
+		swaymsg "exec $turm --title \"[${ws}\.1]\""
+		swaymsg "[title=\"\[${ws}\.0]\]\"] focus;"
+		swaymsg "exec $turm --title \"[${ws}\.2]\""
+		swaymsg "[title=\"\[${ws}\.0]\]\"] focus;"
+		swaymsg "exec $turm --title \"[${ws}\.3]\""
+		;;
+	    (3|30)
+  		swaymsg "exec $turm"
+		swaymsg "exec $turm"
+ 		swaymsg "exec $turm"
+		;;
+	    (2)
+		speak-ng "use $mod tab $mod tab please"
+		;;
+	    (1)
+		speak-ng "Use $mod tab"
+		;;
+	    (0)
+		kill-terminals-in-workspace $ws
+		;;
+	    (*)
+		speak-ng "bad request ignored"
+		;;
+	esac
+    fi
+}
+
+
+function kill-terminals-in-workspace
+{
+    ws=${1:-$(swaymsg -p -t get_workspaces |\
+		  grep "focused" | awk '{print $2}')}
+
+    swaymsg --quiet "[app_id=\"foot\" workspace=\"$ws\"] kill"
+    swaymsg --quiet "[app_id=\"alacritty\" workspace=\"$ws\"] kill"
+    swaymsg --quiet "[app_id=\"kgx\" workspace=\"$ws\"] kill"
+    swaymsg --quiet "[app_id=\"ptyxis5\" workspace=\"$ws\"] kill"
+    swaymsg --quiet "[app_id=\"xfce4-terminal\" workspace=\"$ws\"] kill"
+    swaymsg --quiet "[app_id=\"emacs-terminal\" workspace=\"$ws\"] kill"
+    swaymsg --quiet "[app_id=\"urxvt\" workspace=\"$ws\"] kill"
+    swaymsg --quiet "[app_id=\"konsole\" workspace=\"$ws\"] kill"
+    swaymsg --quiet "[app_id=\"?term\" workspace=\"$ws\"] kill"
+    swaymsg --quiet "[app_id=\"*terminal\" workspace=\"$ws\"] kill"
+}
+
+#
+# START HERE
+#
+
+#  Internal flags activate one or other function, originally two parts
+#  of an if-else stmt that just got bigger and bigger.
+
+# $4 is only ever set for test. Set "autotiling" or "handtiling" for test
+# nothing else. $1 $2 $3 are documented in autolayout fn header
+
+autolayout $@
+handlayout $@
+
+#
+# Done.
+#
