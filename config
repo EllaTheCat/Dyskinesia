@@ -1,4 +1,4 @@
-# -*- MODE: shell-script -*-
+ # -*- MODE: shell-script -*-
 ### ellathecat's comment-heavy config for sway on two or three
 ### HD monitors.
 
@@ -26,6 +26,10 @@ set $SWAY_CONFIG_FILE ~/.config/sway/config
 set $SWAY_CONFIG_DIR  ~/.config/sway/config.d
 set $SWAY_SCRIPTS_DIR ~/.config/sway/scripts.d
 set $SWAY_ASSETS_DIR  ~/.config/sway/assets.d
+
+# The 'autotiling' documentation starts circa line 1900 but that is
+# too late to launh the script. Start it asap.
+exec_always $SWAY_SCRIPTS_DIR/autotiling
 
 ### NON-NEGOTIABLE MODIFIERS - DO NOT EDIT THESE BINDINGS!
 
@@ -1916,12 +1920,9 @@ workspace 99 output $spareop
 # If, like ellathecat, you feel uncomfortable splitting windows,
 # running the autotiling utility lets i3/sway take over the
 # responsibiliy. It's not full dynamic windowing some might say but
-# it's adequate.
-
-exec_always $SWAY_SCRIPTS_DIR/autotiling
-
-# It's OK to launch the application (written in Python) while an
-# instance is running. It seems robust, it just keeps going!
+# it's adequate.  It's OK to launch the application (written in
+# Python) while an instance is running. It's robust, it just keeps
+# going!
 
 # https://github.com/nwg-piotr/autotiling
 
