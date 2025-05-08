@@ -5,42 +5,95 @@
 
 # These names must track the names listed in the eponymous section
 # inside SWAY_CONFIG_FILE. Config variables are not shell variables.
+
 export SWAY_CONFIG_FILE=${HOME}/sway/config
 export SWAY_CONFIG_DIR=${HOME}/.config/sway/config.d
 export SWAY_SCRIPTS_DIR=${HOME}/.config/sway/scripts.d
 export SWAY_ASSETS_DIR=${HOME}/.config/sway/assets.d
 
 ### REINSTALL GOODIES BEGIN
-# Nothing should be showing at this stage.
-${SWAY_SCRIPTS_DIR}/goodies.script hide
-sleep 1
+
+# Nothing should have been showing at this stage.
+${SWAY_SCRIPTS_DIR}/goodies.script hide; sleep 1s
 
 ### INSTALL POPUPTOOLS
-# Destroy all current popuptools and then install the two PopUp Terminals and
-# the Volume Control on the scratchpad.
-swaymsg "exec \"${SWAY_SCRIPTS_DIR}/goodies.script popuptools\"" ; sleep 2s
+
+# Destroy all current popuptools and then install the two PopUp
+# Terminals and the Volume Control on the scratchpad. Manifest as a
+# brief flash. Rebuilding at any time is supported via the menu in the
+# goodies.script green nagbar. $mod+f12 toggles that nagbar between
+# show & hide.
+
+swaymsg "exec \"${SWAY_SCRIPTS_DIR}/goodies.script popuptools\"" ;
 
 ### INSTALL WORKSPACES
-# BpyTOP, VLCx2 Firefox, Files, Terminals, Emacs, Terminals. The sleep
-# delays were tuned to keep each app on its associated workspace.
-swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 97\"" ; sleep 5s ;
-swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 89\"" ; sleep 3s ;
-swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 88\"" ; sleep 7s ;
-swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 55\"" ; sleep 9s ;
-swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 69\"" ; sleep 5s ;
-swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 44\"" ; sleep 5s ;
+
+# The sleep delays are preferably tuned to keep each app on its
+# associated workspace. YMMV. Too short and the app appears on the
+# workspace of its successor app in the list.
+
+# Anu VLIW processsor HW designers or SW developers are encouraged to
+# try pipelining workspace installation for a faster startup. OTOH a
+# leisurely startup facilitates sober reflection
+
+swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 99
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\"" ; sleep 5s ;
+## BpyTOP. Beautiful but hungry.
+swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 99\"" ; sleep 5s ;
+# VLC Video Capture. UPnP DLNA.       
+swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 88\"" ; sleep 3s ;
+# Thunar x2 even-odd numbered workspaces.
+swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 66\"" ; sleep 3s ;
+swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 44\"" ; sleep 3s ;
+# 2x2 terminals x2, even-odd numbered workspaces.
 swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 43\"" ; sleep 9s ;
-swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 33\"" ; sleep 9s ;
 swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 32\"" ; sleep 9s ;
+# Firefox and Emacs.
+swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 55\"" ; sleep 15s ;
+swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 33\"" ; sleep 15s ;
+
 
 ### INITIALISE EXTRA USER DISK DRIVES.
 #
 # Extra disk drives that are monopolised by the user, are not allowed
 # to hang off /home, are hung off /run/media/${USER}/ (on fedora) or
-# similar on other Linux distros. The goodies menu has means to
+# similar on2 other Linux distros. The goodies menu has means to
 # "unmount external disks" that exists to make this point.
 #
-# internal SATA drives are mounted via fstab leaving "udiskie" to do
+# Internal SATA drives are mounted via fstab leaving "udiskie" to do
 # the USB drives, to be shown as mounted by nautilus in the sidebar.
 swaymsg "exec 'udiskie -a'"; sleep 9s ; 
 

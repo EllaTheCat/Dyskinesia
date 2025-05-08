@@ -11,14 +11,14 @@ export SWAY_SCRIPTS_DIR=${HOME}/.config/sway/scripts.d
 export SWAY_ASSETS_DIR=${HOME}/.config/sway/assets.d
 #
 # Visit the workspace $1 with an app $2 expected to be running there,
-# and $2 launched by "$exe".
+# and $3 launched by "$exe".
 #
 function subroutine
 {
     # Common code hoisted to save space and minimise copy-paste.  Debug
     # echo stmts require invocation in a terminal. Don't forget to quote
     # $app and $exe in the calls of this function.
-    ws="$1"; app="$2"; exe="$3";
+    ws="$1"; app="$2"; exe="$3"; fsg="$4"
     echo "app=$app"
     echo "exe=$exe"
     # STEP 1 Visit the target workspace if not already there.
@@ -39,9 +39,11 @@ function subroutine
     if [ "_$wsapp" = "_" ]; then
 	echo "Representation not matched, launching \"${exe}\" now"
 	swaymsg "exec ${exe}"
+	postlaunch "$ws"	
     elif [ "_$wsapp" = "_Representation: H[]" ]; then
 	echo "Representation suggests empty workspace, launching \"${exe}\" now"
 	swaymsg "exec ${exe}"
+	postlaunch "$ws"
     elif [ "_$wsapp" = "_Representation: H[null]" ]; then
 	echo "Representation null, app $app not listed, visit workspace $ws only"
     else
@@ -50,6 +52,33 @@ function subroutine
     fi
 }
 
+#
+# Helper function for apps that were launched on the current visit to
+# workspace $1.
+#
+function postlaunch
+ {
+    # Use alpha placeholders for cases that have not been associated with a
+    # (double-digit) workspace (hard-coded).
+    case "$ws" in
+	(uu|33|55)
+	    # Setup time to be confident that there is an app window
+	    # on-screen.
+	    sleep 3s
+	    # We don't want fullscreen 'cos it loses the lists of
+	    # workspaces on each output provided by the status bar. 
+	    swaymsg  "fullscreen disable"
+	    ;;
+	(vv|99)
+	    sleep 3s
+	    swaymsg  "fullscreen toggle global"
+	    ;;
+	(*)
+	    ;;
+    esac
+ }
+
+
 ### A SIDEBAR REGARDING MULTIPLE-TERMINAL-INSTANCE WORKSPACES ###
 
 	# You can add more instances or delete some instances and the
@@ -57,14 +86,14 @@ function subroutine
 	# or anybody or anything else reduces the number of instances
 	# to ZERO, in which case the workspace will offer to rebuild
 	# itself with four fresd instances ready by the bext visit
-	# depending upon youg response to a dialog that has a short
+	# depending upon your response to a dialog that has a short
 	# timeout before asssuming rebuild is requested.
 
 #
 # START HERE.
 #
 # Each workspace can have its own custom behaviour. Apply double
-# quotes and semi colons defensively.
+ # quotes and semi colons defensively.
 ws="$1"
 case "$ws" in
     #
@@ -84,14 +113,20 @@ case "$ws" in
     #
     ### Section 1
     #
-    # These are our generic cases handled by "setup.script". 
-    (99)
+    # These are our generic cases handled by "setup.script".
+    #
+    # The following two  cases, 97 and 97X, are  system monitors which
+    # live on workspace  97. Only one, 97, is enabled,  because 97X is
+    # disabled by virtue of the X.   This is a generic technique, used
+    # specifically to choose  either "htop" or "BpyTOP"  as our system
+    # monitor on workspace 97.
+    (97)
 	# htop. alacritty can set its app_id with -class.
 	# htop is less resource intensive than BpyTOP. 
 	app="htop"; exe="alacritty --class htop -e htop";
 	subroutine "$ws" "$app" "$exe"
 	;;
-    (97)
+    (97X)
  	# BpyTOP. alacritty can set its app_id with -class.
 	# 40% CPU when PC idle, do not autostart unless...
 	app="bpytop"; exe="alacritty --class bpytop -e bpytop";
@@ -102,32 +137,29 @@ case "$ws" in
 	# "upnp.script" (restricted distribution) (personal project).
 	upnp.script
 	;; 	
-    (88|89)
+    (88)
 	# VLC MJPG capture =or= DVB capture. VLC launches but needs manual
 	# capture setup, these both work.
 	app="vlc"; exe="vlc";
 	subroutine "$ws" "$app" "$exe"
 	;;
-    (55|56)
+    (55)
 	app="org.mozilla.firefox"; exe="firefox";
 	subroutine "$ws" "$app" "$exe"
 	;;
-    (44|46)
-	# Files alias nautilus. Although much better behaved of late,
-	# nauti0lus still seems to pull stunts like aggregating
-	# windows from several workspaces into one!
-
-	# Open current working directory as it was at invocation. Put
-	# on even-numbered workspaces.
+    (44X|66X)
+	# Files alias nautilus from GNOME.
+	# Open current working directory as it was at invocation.
+	# Possible "consolidate workspaces" bug, otherwise much
+	# improved of late and stil very pretty.
 	app="org.gnome.Nautilus"; exe="$(printf "xdg-open %s" $(pwd))";
 	subroutine "$ws" "$app" "$exe"
 	;;
-    (66|68)
-	# Files with Nautilus from GNOME replaced by Thunar from
-	# XFCE. the Fedora Sway spin preferred file manager.
-
-	# Opens current working directory as it was at invocation. Put
-	# on even-numbered workspaces.
+    (44|66)
+	# Thunar from XFCE.
+	# 2 workspaces, 1 even 1 odd.
+ 	# Fedora/ Sway spin "recommended" DE file manager.
+	# Opens current working directory as it was at invocation. 
 	app="thunar"; exe="$(printf "thunar %s" $(pwd))";
 	subroutine "$ws" "$app" "$exe"
 	;;
@@ -143,6 +175,10 @@ case "$ws" in
 	app="foot"; exe="someterminals.script foot 4 43";
 	subroutine "$ws" "$app" "$exe"
 	;;
+    (22)
+	app="spotify"; exe="flatpak run com.spotify.Client";
+	subroutine "$ws" "$app" "$exe"
+	;;
     (14)
 	# DVD ripper using either DVD drive.  YOU MUST BUILD MAKEMKV
 	# FROM SOURCE & BLOB for this script to work, but if you do
@@ -152,10 +188,6 @@ case "$ws" in
 	app=makemkv; exe=makemkv;
 	subroutine "$ws" "$app" "$exe"
 	;;
-    (22)
-	app="spotify"; exe="flatpak run com.spotify.Client";
-	subroutine "$ws" "$app" "$exe"
-	;;
     #
     ### Section 2
     #
@@ -163,9 +195,19 @@ case "$ws" in
     (12) 
         # CD ripper. Everything configured in Preferences including
  	# using external USB CD drive /dev/sr1.
+	p0k=mm
 	app=asunder; exe=asunder;
 	subroutine "$ws" "$app" "$exe"
-        ;;
+	;;
+    (00)
+	# Used to play a short looping video as entertainment, for
+	# diagnostics (setting levels, swapped speakers) and an
+	# override condttion for for the sway idle inhibitor. Type m
+	# in the video window for mute toggle. Type space to pause
+	# (stfu) or play.
+	app="mpv"; exe="mpv --loop-file inf ${SWAY_ASSETS_DIR}/intro.mp4";
+	subroutine "$ws" "$app" "$exe"
+	;;
     ([0-9][0-9])
 	# Visit a workspace, but do no application housekeeping other
 	# than showing the winapps menu. Unassigned workspaces end up
@@ -174,9 +216,9 @@ case "$ws" in
 	# workspace that hasn't been caught already.
         sway "workspace --no-auto-back-and-forth $ws"
 	sleep 1s
-	rofi -show combi -combi-modes window\#drun -modes combi	
+	rofi -show combi -combi-modes window\#drun -modes combi
 	;;
-   (*)
+    (*)
 	# All nonsense and all errors MUST END UP HERE and cause EXIT
         # WITH FAILURE status. The regex captures everything but we've
         # already caught all the double-digits. So what's left are the
