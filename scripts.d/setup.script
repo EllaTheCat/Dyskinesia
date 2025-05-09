@@ -30,60 +30,23 @@ swaymsg "exec \"${SWAY_SCRIPTS_DIR}/goodies.script popuptools\"" ;
 
 # The sleep delays are preferably tuned to keep each app on its
 # associated workspace. YMMV. Too short and the app appears on the
-# workspace of its successor app in the list.
+# workspace of its suzccessor app in the list.
 
-# Anu VLIW processsor HW designers or SW developers are encouraged to
-# try pipelining workspace installation for a faster startup. OTOH a
-# leisurely startup facilitates sober reflection
-
-swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 99
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\"" ; sleep 5s ;
-## BpyTOP. Beautiful but hungry.
-swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 99\"" ; sleep 5s ;
+## mpv shows a short video repeated three times 
+swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 00\"" ; sleep 5s ;
+## System Monitor. BpyTOP =or= htop.
+swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 97\"" ; sleep 5s ;
 # VLC Video Capture. UPnP DLNA.       
 swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 88\"" ; sleep 3s ;
-# Thunar x2 even-odd numbered workspaces.
+# File Explorer x2, "nautilus" or "thunar".
 swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 66\"" ; sleep 3s ;
 swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 44\"" ; sleep 3s ;
-# 2x2 terminals x2, even-odd numbered workspaces.
+# 2x2 terminals x2, "foot" =or= "kgx".
 swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 43\"" ; sleep 9s ;
 swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 32\"" ; sleep 9s ;
 # Firefox and Emacs.
-swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 55\"" ; sleep 15s ;
-swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 33\"" ; sleep 15s ;
+swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 55\"" ; sleep 9s ;
+swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 33\"" ; sleep 9s ;
 
 
 ### INITIALISE EXTRA USER DISK DRIVES.

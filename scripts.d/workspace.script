@@ -18,7 +18,7 @@ function subroutine
     # Common code hoisted to save space and minimise copy-paste.  Debug
     # echo stmts require invocation in a terminal. Don't forget to quote
     # $app and $exe in the calls of this function.
-    ws="$1"; app="$2"; exe="$3"; fsg="$4"
+    ws="$1"; app="$2"; exe="$3";
     echo "app=$app"
     echo "exe=$exe"
     # STEP 1 Visit the target workspace if not already there.
@@ -92,8 +92,14 @@ function postlaunch
 #
 # START HERE.
 #
+ 
 # Each workspace can have its own custom behaviour. Apply double
- # quotes and semi colons defensively.
+# quotes and semi colons defensively.
+
+ # Thunar progress indicator made floating so it stands out. Helps
+ # avoid file corruption or truncation.
+swaymsg "for_window [app_id="Thunar" title="^Copying.*"] floating enable"
+ 
 ws="$1"
 case "$ws" in
     #
@@ -106,9 +112,17 @@ case "$ws" in
 	subroutine "$ws" "$app" "$exe"
 	;;
     (32)
-	# This workspace starts with four instances of "foot".
+	# This workspace starts with four instances of "foot", the
+	# preferrred terminal for sway, although alacritty comes
+	# close. Steep learning curve imo.
 	app="foot"; exe="someterminals.script foot 4 32";
 	subroutine "$ws" "$app" "$exe"
+	;;
+    (32Y)
+	# This workspace starts with four instances of "kgx".
+	# a terminal with some of the better classic features.
+	app="kgx"; exe="someterminals.script kgx 4 ${ws}";
+ 	subroutine "$ws" "$app" "$exe"
 	;;
     #
     ### Section 1
@@ -120,6 +134,10 @@ case "$ws" in
     # disabled by virtue of the X.   This is a generic technique, used
     # specifically to choose  either "htop" or "BpyTOP"  as our system
     # monitor on workspace 97.
+    #
+    # Also used for foot|kgx terminals (32)(43) and thunar|nautilus
+    # file explorers (66)(44). ToDo emacs|nvim.
+    #
     (97)
 	# htop. alacritty can set its app_id with -class.
 	# htop is less resource intensive than BpyTOP. 
@@ -128,7 +146,7 @@ case "$ws" in
 	;;
     (97X)
  	# BpyTOP. alacritty can set its app_id with -class.
-	# 40% CPU when PC idle, do not autostart unless...
+	# Beautiful but hungry.
 	app="bpytop"; exe="alacritty --class bpytop -e bpytop";
 	subroutine "$ws" "$app" "$exe"
 	;;
@@ -170,9 +188,14 @@ case "$ws" in
 	app=xfburn; exe=xfburn;
 	subroutine "$ws" "$app" "$exe"
 	;;
-    (43)
+    (43X)
 	# This workspace starts with four instances of "foot".
-	app="foot"; exe="someterminals.script foot 4 43";
+	app="foot"; exe="someterminals.script foot 4 32";
+	subroutine "$ws" "$app" "$exe"
+	;;
+    (43)
+	# This workspace starts with four instances of "kgx".
+	app="kgx"; exe="someterminals.script kgx 4 ${ws}";
 	subroutine "$ws" "$app" "$exe"
 	;;
     (22)
@@ -185,7 +208,7 @@ case "$ws" in
 	# not, the executable fedora provides does still work.
 	# https://linuxconfig.org/how-to-install-makemkv-on-fedora-linux
 	# ellathecat on fedora 41, v1.17.9, expires 2025-05-30.
-	app=makemkv; exe=makemkv;
+	app="makemkv" ; exe="makemkv" ;
 	subroutine "$ws" "$app" "$exe"
 	;;
     #
@@ -195,8 +218,7 @@ case "$ws" in
     (12) 
         # CD ripper. Everything configured in Preferences including
  	# using external USB CD drive /dev/sr1.
-	p0k=mm
-	app=asunder; exe=asunder;
+	app="asunder" ; exe="asunder";
 	subroutine "$ws" "$app" "$exe"
 	;;
     (00)
