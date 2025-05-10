@@ -105,47 +105,34 @@ case "$ws" in
     #
     ### Section 0
     #
-    (33)
+    (33|88)
 	# Emacs. This case is placed first to mitigate risk of code
 	# corruption thereby facilitating repair.
 	app="emacs"; exe="emacs";
 	subroutine "$ws" "$app" "$exe"
-	;;
-    (32)
-	# This workspace starts with four instances of "foot", the
-	# preferrred terminal for sway, although alacritty comes
-	# close. Steep learning curve imo.
-	app="foot"; exe="someterminals.script foot 4 32";
-	subroutine "$ws" "$app" "$exe"
-	;;
-    (32Y)
-	# This workspace starts with four instances of "kgx".
-	# a terminal with some of the better classic features.
-	app="kgx"; exe="someterminals.script kgx 4 ${ws}";
- 	subroutine "$ws" "$app" "$exe"
 	;;
     #
     ### Section 1
     #
     # These are our generic cases handled by "setup.script".
     #
-    # The following two  cases, 97 and 97X, are  system monitors which
-    # live on workspace  97. Only one, 97, is enabled,  because 97X is
-    # disabled by virtue of the X.   This is a generic technique, used
-    # specifically to choose  either "htop" or "BpyTOP"  as our system
-    # monitor on workspace 97.
+    # The following two cases, (01) and (01X), are system monitors
+    # which live on workspace 01. Only one, (01), is enabled, because
+    # (01X) is disabled by virtue of the X.  This is a generic
+    # technique, used specifically to choose either "htop" or "BpyTOP"
+    # as our system monitor on workspace 02.
     #
-    # Also used for foot|kgx terminals (32)(43) and thunar|nautilus
+    # Also used for foot|kgx terminals (65)(43) and thunar|nautilus
     # file explorers (66)(44). ToDo emacs|nvim.
     #
-    (97)
+    (01)
 	# htop. alacritty can set its app_id with -class.
 	# htop is less resource intensive than BpyTOP. 
 	app="htop"; exe="alacritty --class htop -e htop";
 	subroutine "$ws" "$app" "$exe"
 	;;
-    (97X)
- 	# BpyTOP. alacritty can set its app_id with -class.
+    (01X)
+ 	# BpyTOP. alacri]]tty can set its app_id with -class.
 	# Beautiful but hungry.
 	app="bpytop"; exe="alacritty --class bpytop -e bpytop";
 	subroutine "$ws" "$app" "$exe"
@@ -188,12 +175,12 @@ case "$ws" in
 	app=xfburn; exe=xfburn;
 	subroutine "$ws" "$app" "$exe"
 	;;
-    (43X)
+    (65X|43X)
 	# This workspace starts with four instances of "foot".
 	app="foot"; exe="someterminals.script foot 4 32";
 	subroutine "$ws" "$app" "$exe"
 	;;
-    (43)
+    (65|43)
 	# This workspace starts with four instances of "kgx".
 	app="kgx"; exe="someterminals.script kgx 4 ${ws}";
 	subroutine "$ws" "$app" "$exe"
@@ -202,6 +189,10 @@ case "$ws" in
 	app="spotify"; exe="flatpak run com.spotify.Client";
 	subroutine "$ws" "$app" "$exe"
 	;;
+    (17)
+	# GNOME Disks.
+	app="gnome-disks"; exe="gnome-disks";
+	subroutine "$ws" "$app" "$exe"
     (14)
 	# DVD ripper using either DVD drive.  YOU MUST BUILD MAKEMKV
 	# FROM SOURCE & BLOB for this script to work, but if you do
@@ -226,8 +217,8 @@ case "$ws" in
 	# diagnostics (setting levels, swapped speakers) and an
 	# override condttion for for the sway idle inhibitor. Type m
 	# in the video window for mute toggle. Type space to pause
-	# (stfu) or play.
-	app="mpv"; exe="mpv --loop-file inf ${SWAY_ASSETS_DIR}/intro.mp4";
+	# (stfu) or play. x
+	app="mpv"; exe="mpv --loop-file 1k ${SWAY_ASSETS_DIR}/intro.mp4";
 	subroutine "$ws" "$app" "$exe"
 	;;
     ([0-9][0-9])

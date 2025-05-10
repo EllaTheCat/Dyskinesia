@@ -11,69 +11,100 @@ export SWAY_CONFIG_DIR=${HOME}/.config/sway/config.d
 export SWAY_SCRIPTS_DIR=${HOME}/.config/sway/scripts.d
 export SWAY_ASSETS_DIR=${HOME}/.config/sway/assets.d
 
-### REINSTALL GOODIES BEGIN
+#  Loop duration is (end minus start) ideally one minute or less.
+secs=5
+while [ $secs -le 65 ];
+do
+    case "$secs" in
 
-# Nothing should have been showing at this stage.
-${SWAY_SCRIPTS_DIR}/goodies.script hide; sleep 1s
+	### REINSTALL GOODIES BEGIN
+	
+	(5)
+	    # Nothing should have been showing at this stage.
+	    ${SWAY_SCRIPTS_DIR}/goodies.script hide
+	    ;;
 
-### INSTALL POPUPTOOLS
+	### INSTALL POPUPTOOLS
+	(6)
+	    # Destroy all current popuptools and then install the two PopUp
+	    # Terminals and the Volume Control on the scratchpad. Manifest as
+	    # a brief flash. Rebuilding at any time is supported via the menu
+	    # in the goodies.script green nagbar. $mod+f12 toggles that nagbar
+	    # between show & hide.
+	    swaymsg "exec \"${SWAY_SCRIPTS_DIR}/goodies.script popuptools\"" ;
+	    ;;
 
-# Destroy all current popuptools and then install the two PopUp
-# Terminals and the Volume Control on the scratchpad. Manifest as a
-# brief flash. Rebuilding at any time is supported via the menu in the
-# goodies.script green nagbar. $mod+f12 toggles that nagbar between
-# show & hide.
+	### INSTALL WORKSPACES
+	
+	# In order to keep each app on its associated workspace brute
+	# force snd ignorance staggers the app launches in time, hence
+	# the case in a loop.
 
-swaymsg "exec \"${SWAY_SCRIPTS_DIR}/goodies.script popuptools\"" ;
+	(10)
+	    swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 00\""
+	    ;;
+	(14)
+	    swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 66\""
+	    ;;
+	(21)
+	    swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 65\""
+	    ;;
+	(29)
+	    swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 44\""
+	    ;;
+	(36)
+	    swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 43\""
+	    ;;
+	(44)
+	    swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 33\""
+	    ;;
+	(50)
+	    swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 55\""
+	    ;;
+	(56)
+	    swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 01\""
+	    ;;
+	  
+	  
+	### INITIALISE EXTRA USER DISK DRIVES.
 
-### INSTALL WORKSPACES
+	# Extra disk drives, those that are monopolised by the
+	# user,are not allowed to hang off /home, instead are hung off
+	# /run/media/${USER}/ (on fedora) or similar on other Linux
+	# distros. The goodies menu has means to "unmount external
+	# disks" that exists to make this point.
 
-# The sleep delays are preferably tuned to keep each app on its
-# associated workspace. YMMV. Too short and the app appears on the
-# workspace of its suzccessor app in the list.
+	# Internal SATA drives are mounted via fstab leaving "udiskie"
+	# to do the USB drives, to be shown as mounted by nautilus in
+	# the sidebar.
+	(57)
+	    swaymsg "exec 'udiskie -a'"
+	    ;;
 
-## mpv shows a short video repeated three times 
-swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 00\"" ; sleep 5s ;
-## System Monitor. BpyTOP =or= htop.
-swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 97\"" ; sleep 5s ;
-# VLC Video Capture. UPnP DLNA.       
-swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 88\"" ; sleep 3s ;
-# File Explorer x2, "nautilus" or "thunar".
-swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 66\"" ; sleep 3s ;
-swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 44\"" ; sleep 3s ;
-# 2x2 terminals x2, "foot" =or= "kgx".
-swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 43\"" ; sleep 9s ;
-swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 32\"" ; sleep 9s ;
-# Firefox and Emacs.
-swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 55\"" ; sleep 9s ;
-swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 33\"" ; sleep 9s ;
+	# Finally, post the goodies banner (runtime help) and the
+	# menu, in that order, both on the preferred output. This
+	# snippet hasn't been rolled into the timing loop because
+	(64)
+	    swaymsg "focus output VGA-1" ; sleep 1s ;
+	    swaymsg "exec 'goodies.script show'"; sleep 1s ;
+	    swaymsg "exec 'rofi -show combi -combi-modes window\#drun -modes'" 
+	    ;;
+	# The windows section of the winapps menu is at the top and it
+	# lists the popuptools first then the apps tht have recently
+	# been setup in order of their appearance. The apps section of
+	# the winapps menu lists available gui apps in alphabet
+	# order. There is a minor maintenance burden here, the winapps
+	# menu invoked here should be similar to the $winappsmenu
+	# invoked by the binding in 'config'.  To dismiss the menu
+	# without focus or launch press Escape.
 
-
-### INITIALISE EXTRA USER DISK DRIVES.
-#
-# Extra disk drives that are monopolised by the user, are not allowed
-# to hang off /home, are hung off /run/media/${USER}/ (on fedora) or
-# similar on2 other Linux distros. The goodies menu has means to
-# "unmount external disks" that exists to make this point.
-#
-# Internal SATA drives are mounted via fstab leaving "udiskie" to do
-# the USB drives, to be shown as mounted by nautilus in the sidebar.
-swaymsg "exec 'udiskie -a'"; sleep 9s ; 
-
-# Finally, post the goodies banner (runtime help) and the winapps
-# menu, in that order, both on the preferred output.
-swaymsg "focus output VGA-1" ; sleep 1s ;
-swaymsg "exec 'goodies.script show'"; sleep 1s ;
-swaymsg "exec 'rofi -show combi -combi-modes window\#drun -modes'" 
-
-# The windows section of the winapps menu is at the top and it lists
-# the popuptools first then the apps that have recently been setup in
-# order of their appearance. The apps section of the winapps menu
-# lists available gui apps in alphabet order. There is a minor
-# maintenance burden here, the winapps menu invoked here should be
-# similar to the $winappsmenu invoked by the binding in 'config'.
-# To dismiss the menu without focus or launch press Escape.
-
+	(*)
+	    # More usefuk and less annoying than you might think.
+	    speak-ng "$secs"
+	    ;;
+    esac
+    secs=$((secs + 1))
+done
 
 #
 # Done
