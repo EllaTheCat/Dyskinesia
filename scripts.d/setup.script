@@ -12,20 +12,20 @@ export SWAY_SCRIPTS_DIR=${HOME}/.config/sway/scripts.d
 export SWAY_ASSETS_DIR=${HOME}/.config/sway/assets.d
 
 #  Loop duration is (end minus start) ideally one minute or less.
-secs=5
+secs=0
 while [ $secs -le 65 ];
 do
     case "$secs" in
 
 	### REINSTALL GOODIES BEGIN
 	
-	(5)
+	(1)
 	    # Nothing should have been showing at this stage.
 	    ${SWAY_SCRIPTS_DIR}/goodies.script hide
 	    ;;
 
 	### INSTALL POPUPTOOLS
-	(6)
+	(2)
 	    # Destroy all current popuptools and then install the two PopUp
 	    # Terminals and the Volume Control on the scratchpad. Manifest as
 	    # a brief flash. Rebuilding at any time is supported via the menu
@@ -40,7 +40,7 @@ do
 	# force snd ignorance staggers the app launches in time, hence
 	# the case in a loop.
 
-	(10)
+	(9)
 	    swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 00\""
 	    ;;
 	(14)

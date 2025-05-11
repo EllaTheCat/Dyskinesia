@@ -547,9 +547,17 @@ bindsym $alt+$mod+g fullscreen toggle global
 
 # Abstracted aliases for the (three) outputs.
 
-set $spareop HDMI-A-1
+# Either 2 or 3 monitors
 set  $leftop HDMI-A-2
 set $rightop VGA-1
+
+# 2 monitors DVI VGA
+### set  $leftextraop HDMI-A-2
+### set $rightextraop VGA-1
+
+# 3 monitors DVI VGA HDMI
+set  $leftextraop HDMI-A-1
+set $rightextraop HDMI-A-1
 
 # numpad.config
 
@@ -1784,12 +1792,13 @@ bindsym	f4 mode $KP_NTR
 # right. If you want to pair workspaces to be side by side pair odd=N
 # and even-N+1. Exceptions are allowed anywhere, that's why this rule
 # is made an explicit list instead of embedded in an algorihm. There
-# is an exception for workspaces 98 and 99 to illustrate this.
+# are exceptions made for workspaces {00 and 01} and {98 and 99} to
+# illustrate this.
 
 # TYPO_TAG_101
 
-workspace 00 output $leftop
-workspace 01 output $rightop
+workspace 00 output $leftextraop
+workspace 01 output $rightextraop
 workspace 02 output $leftop
 workspace 03 output $rightop
 workspace 04 output $leftop
@@ -1895,8 +1904,8 @@ workspace 94 output $leftop
 workspace 95 output $rightop
 workspace 96 output $leftop
 workspace 97 output $rightop
-workspace 98 output $spareop
-workspace 99 output $spareop
+workspace 98 output $leftextraop
+workspace 99 output $rightextraop
 
 # TYPO_TAG_102
 
