@@ -1,0 +1,7 @@
+# dot-gitignore
+
+# Belt'n'braces 'cos 'dot-git/info/exclude' should catch this.
+# This exists to stop me pushing a 154Mbyte video which wasn't
+# caught due to an oversight.
+assets.d/intro.mp4
+assets.d/intro.d/intro.mp4
