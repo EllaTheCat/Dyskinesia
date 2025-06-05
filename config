@@ -1,6 +1,7 @@
 # -*- MODE: shell-script -*-
-### ellathecat's comment-heavy config for sway on two or three
-### HD monitors.
+### ellathecat's comment-heavy config for sway on two or three HD
+### monitors. The syntax is sway/i3 not bash but syntax highlighting
+### pretends it is bash pending an emacs mode dedicated to sway/i3.
 
 ### DESKTOP OVERVIEW ###
 
@@ -14,10 +15,10 @@
 # 00 to 99, even mumbered on the left, odd numbered in the centre, and
 # highest numbered on the right. Workspaces display containers that
 # are either tiled or floating. A green banner that can be toggled
-# between show and hide states is shown at the very bottom of the
-# active screen, below the status bar. On the left of the green banner
-# subluiminal hints are displayed, on the right is a small mouse
-# driven menu.
+# between show and hide states with key f12 is shown at the very
+# bottom of the active screen, below the status bar. On the left of
+# the green banner subliminal hints are displayed, on the right is a
+# small mouse driven menu.
 
 ### IMPORTANT EARLY DECLARATIONS ###
 
@@ -28,7 +29,7 @@ set $SWAY_SCRIPTS_DIR ~/.config/sway/scripts.d
 set $SWAY_ASSETS_DIR  ~/.config/sway/assets.d
 
 # The 'autotiling' documentation starts circa line 1900 but that is
-# too late to launh the script. Start it asap.
+# too late to launch the script. Start it asap.
 exec_always $SWAY_SCRIPTS_DIR/autotiling
 
 ### NON-NEGOTIABLE MODIFIERS - DO NOT EDIT THESE BINDINGS!
@@ -36,13 +37,24 @@ exec_always $SWAY_SCRIPTS_DIR/autotiling
 set $mod Mod4
 set $alt Mod1
 
-# I miss "xcape" from my i3/X11 days, the Alt keys would work as Alt
-# modifiers but standalone they behaved as Escape.
+# Later we swap the Ctrl and Alt keys at the bottom left to be more
+# comfortable and we set Caps Lock to Escape. That's why you must
+# respect $mod and $alt set here. # I miss "xcape" from my i3/X11 days,
+# the Alt keys would work as Alt modifiers but standalone they behaved
+# as Escape.
+
+### MESSED-UP MODIFIERS?
+
+# When using a 60% keyboard, should you notice that the three
+# modifiers bottom left are scrambled eg Super swapped wth Control
+# when you expect Alt swapped wth Control, then Fn+Esc resets AND Fn+n
+# to use PC layout instead of Mac layout. It's due to the keyboard not
+# this software!
 
 ### RELOAD ###
 
 # Reload the configuration from $SWAY_CONFIG_FILE in default mode.
-# (This does not refresh the goodies banner, use $mod+f12 to do that.)
+# (This does not refresh the goodies banner, use f12 to do that.)
 bindsym Shift+$mod+c mode default, reload ;
 
 ### TERMINALS
@@ -50,12 +62,15 @@ bindsym Shift+$mod+c mode default, reload ;
 # If only terminal arguments didn't differ in the details between
 # popular terminals.  On ellathecat's machine we use gnome 'kvm' for
 # popup terminals and 'foot' for regular terminals instead of
-# rofi-sensible-terminal.
+# rofi-sensible-terminal. Workspaces with four terminals can be
+# instantiated with kgx or foot.
 
 # Right handed and left handed options for such a frequently used
-# binding.
-bindsym $mod+Return exec foot
-bindsym $mod+Tab    exec foot
+# binding. Choose Escape here and Tab on a similar binding later, or
+# Tab here and Escape on the similar binding later, see (MORE)
+# TERMINALS. EllaTheCat prefers Tab on mode $Terminal.
+bindsym $mod+Escape exec foot
+#indsym $mod+Tab    exec foot
 
 ### POPUP TERMINAL
 
@@ -65,13 +80,14 @@ bindsym $mod+Tab    exec foot
 
 # Show the next scratchpad window OR hide the currently visible one
 # ready to show the next one on the next keypress.
+
 bindsym $mod+minus scratchpad show
 bindsym Left+Up scratchpad show
 bindsym Alt+slash scratchpad show
 
 # Footnote: the second binding is to the Left and Up arrow keys
 # pressed together; it's "one-hand operation friendly" (the right)
-# unlike the first whivh needs two hands if you only have Super_L but
+# unlike the first which needs two hands if you only have Super_L but
 # not Super_R. Look inside modes for bindings to this command AND look
 # at the top of the winapp menu for popup windows. You may be able to
 # get to a popup terminal or volume control faster. The third binding
@@ -88,13 +104,39 @@ bindsym Alt+slash scratchpad show
 # The popup Volume Control is changed to a floating window just before
 # it is moved to the scratchpad. This is done to use a feature
 # introduced in i3 4.24: "Display all floating windows (during
-# fullscreen) regardless to which application they belong to.
+# fullscreen) regardless to which application they belong to".
 # Unfortunately the feature is not yet in Sway so use the default
 # until it is.
 
 ### i3 4.24 ### popup_during_fullscreen all
 ### sway    ### popup_during_fullscreen smart
 popup_during_fullscreen smart
+
+### (MORE) TERMINALS
+
+# Escape is put on CapsLock for a two-handed binding that lets the
+# user choose a terminal on-the-fly. EllaTheCat prefers Tab on mode
+# $Terminal.
+set $Terminal terminals: a e f k u x  
+
+mode "$Terminal" {
+    bindsym space mode default;
+    bindsym $mod+minus scratchpad show
+    bindsym Left+Up scratchpad show
+    bindsym Alt+slash scratchpad show
+   
+    bindsym a mode default, exec alacritty;
+    bindsym e mode default, exec emacs-terminal;
+    bindsym f mode default, exec foot;
+    bindsym k mode default, exec kgx;
+    bindsym u mode default, exec urxvt;
+    bindsym x mode default, exec xfce4-terminal;
+
+    # Easy to type needs customising, this is tailored for EllaTheCat.
+    bindsym Tab mode default, exec foot;
+} 
+#indsym $mod+Escape mode "$Terminal"
+bindsym $mod+Tab    mode "$Terminal"
 
 ### MOUSE LOCATOR
 
@@ -237,7 +279,7 @@ bindsym slash+Menu $winappsmenu
 ### DO NOT BIND THESE KEYS ### bindsym Down+Right $winappsmenu
 ### DO NOT BIND THESE KEYS ### bindsym Left+Right $winappsmenu
 
-# Considering the arrrow keys only, to keep things simple, these three
+# Considering the arrow keys only, to keep things simple, these three
 # all work! What's so special about the Up key? One hypothesis is that
 # Up is on a different row to the other three.
 
@@ -295,10 +337,18 @@ mode "$Kill" {
     # it transparent.  THIS KEY RESTORES EMACS.
     #
     # It has no modifiers unlike most others in this mode, and it also
-    # restores default mode. Press "Supwr+Shift+q" ONCE, the $Kill BMI
+    # restores default mode. Press "Super+Shift+q" ONCE, the $Kill BMI
     # appears, then press "Tab" on its own, the $Kill BMI disappears,
     # and Emacs reappears. This has no BMI text, ('cos it's a bugfix).
-    bindsym Tab [tle=\"Emacs\"] mode default, opacity 1.0;
+    bindsym Tab [title=\"Emacs\"] mode default, opacity 1.0;
+
+    # Options to kill apps launched at startup (see "setup.script").
+    bindsym Shift+E  mode default, exec 'killall emacs-terminal'
+    bindsym Shift+F  mode default, exec 'killall foot'
+    bindsym Shift+K  mode default, exec 'killall kgx'
+    bindsym Shift+N  mode default, exec 'killall nautilus'
+    bindsym Shift+T  mode default, exec 'killall thunar'
+    bindsym Shift+W  mode default, exec 'killall firefox;
 }
 bindsym Shift+$mod+q mode "$Kill"
 
@@ -402,13 +452,6 @@ input 16700:8195:Dell_Dell_USB_Keyboard xkb_numlock enabled
 input 12815:20571:Evision_RGB_Keyboard xkb_layout us
 input 12815:20571:Evision_RGB_Keyboard xkb_options ctrl:swap_lalt_lctl,caps:escape
 input 12815:20571:Evision_RGB_Keyboard xkb_capslock disabled
-input 12815:20571:Evision_RGB_Keyboard xkb_numlock enabled
-
-### VBOARD (virtual keyboard - work in progress)
-
-for_window [title="vboard.py"] floating enable, sticky enable, \
-	   resize set width 1289 px height 232 px, \
-	   move position 320 px 736 px, opacity 0.5;
 
 # CURSOR KEY LAYOUT
 
@@ -515,7 +558,7 @@ mode "$Resize"  {
     bindsym $mod+minus scratchpad show
     bindsym $alt+Delete scratchpad show
 
-    Bindsym $mod+f mode "$Focus"
+    bindsym $mod+f mode "$Focus"
     bindsym $mod+m mode "$Move"
     # These have to be a matter of personal preference. Some bindings
     # have shrink and grow for each of the four cursor arrow
@@ -535,7 +578,7 @@ mode "$Resize"  {
     bindsym $up    resize grow height 10px
     bindsym $right resize grow width 10px
 }
- bindsym $mod+r mode "$Resize"
+bindsym $mod+r mode "$Resize"
 # END FOCUS / MOVE / RESIZE CONTAINER
 
 # Unfortunately using $mod+f to enter focus mode means we have had to
@@ -544,18 +587,23 @@ mode "$Resize"  {
 
 bindsym $alt+$mod+f fullscreen toggle
 bindsym $alt+$mod+g fullscreen toggle global
+bindsym $alt+g [title="mpv"] fullscreen toggle global
 
 # Abstracted aliases for the (three) outputs.
+# Example here is a 3 monitor configuration.
 
-# Either 2 or 3 monitors
+#  ENABLED for 2 monitors DVI VGA =or=
+#  ENABLED for 3 monitors DVI VGA HDMI
 set  $leftop HDMI-A-2
 set $rightop VGA-1
 
-# 2 monitors DVI VGA
+#  ENABLED for 2 monitors DVI VGA
+# DISABLED for 3 monitors DVI VGA HDMI
 ### set  $leftextraop HDMI-A-2
 ### set $rightextraop VGA-1
 
-# 3 monitors DVI VGA HDMI
+# DISABLED for 2 monitors DVI VGA
+#  ENABLED for 3 monitors DVI VGA HDMI
 set  $leftextraop HDMI-A-1
 set $rightextraop HDMI-A-1
 
@@ -1501,7 +1549,7 @@ bindsym KP_Add mode "$ADD"
 # Set the window background opacity. Moving left to right along the
 # entire numbers row from 1 to 9 gives monotonically increasing
 # OPACITY, 0 is fully tranlucent (transparent) and . is fully
-# opaque. Note the 11th fencepost for 10 intervalss of 0.1; we have
+# opaque. Note the 11th fencepost for 10 intervals of 0.1; we have
 # KP_Decimal on the numpad hence period on a keyboard.
 
 # Beware large translucent backgrounds on non-gaming PCs, your CPU
@@ -2018,9 +2066,10 @@ exec echo -n > "$HOME/.config/sway/config.d/90-bar.conf"
 
 # THe three outputs. Dollar names used here differ from those used
 # elsewhere in this config but as defensive programming only.
-set  $sbfirst VGA-1
-set $sbsecond HDMI-A-1
-set  $sbthird HDMI-A-2
+# 1st 2nd 3rd left to right DVI VGA HDMI.
+set  $sbfirst HDMI-A-2
+set $sbsecond VGA-1
+set  $sbthird HDMI-A-1
 
 # Background colours for six status bar positions. I've made them
 # tinted and translucent, all the same, to avoid headaches.
@@ -2032,8 +2081,7 @@ set $lowerleft   #333333aa
 set $upperright  #333333aa
 set $lowerright  #333333aa
 
-# A modifier key for each of six status bars visibility togglee.
-# My head hurts so they are all Alt/Mod1 and untested.
+# A modifier key for each of six status bars visibility toggles
 set $mod0 Mod1
 set $mod1 Mod1
 set $mod2 Mod1
@@ -2146,28 +2194,17 @@ bar {
 ### GOODIES MENU BAR
 
 # A horizontal banner menu anchored to the top or bottom edge of the
-# active output. $mod+f12 toggles between shown and being hidden.  See the
+# active output. f12 toggles between shown and being hidden.  See the
 # file "goodies.script" for explanations, excuses, etc. The X at the
 # right is used to remove spurious copies of the goodies banner when
 # debugging.
-bindsym      f12 exec $SWAY_SCRIPTS_DIR/goodies.script
-bindsym $mod+f12 exec $SWAY_SCRIPTS_DIR/goodies.script
+bindsym f12 exec $SWAY_SCRIPTS_DIR/goodies.script
+
 # Having done the configuration constants we use scripts to perform
 # sequential configuration step-by-step. A script can mix exec and
 # exec_always but it gets messy fast. One script for exec, another
 # for exec_always is better.
 exec $SWAY_SCRIPTS_DIR/setup.script
-
-### f12 or $mod+f12? BOTH!###
-
-# The f12 key is in a comfortable place. That's why some dropdown
-# terminals choose f12 as their magic key. Sure, we can ask users to
-# change that but their muscle memory will object. This config now
-# uses $mod+f12 by default. That said, our PopUp terminals use
-# scrratchpad bindings, so f12 is only reserved for those using tilda,
-# yakuake,etc., and given their minority they can unbind f12 which we
-# have bound to the same command as $mod+f12. Yes, $mod+FunctionKey is
-# a valid keysym.
 
 ### POPUPTOOLS TIDYING UP (see "goodies.script" popuptools() comment)
 
@@ -2201,8 +2238,8 @@ for_window [title="Volume Control"     floating] \
 # you're done.
 
 # This applies to many commands (not just rename) and typing should be
-# easier than  having bindings with  parameters (because you are  in a
-# bash  shell with  history  you can  recall  commands quickly).   See
+# easier than  having bindings with  parameters (because you are in a
+# bash  shell with  history  you can  recall  commands quickly).  See
 # "inputrc.script" for how to setup your bash shell to do this.
 
 ### SWAYMSG

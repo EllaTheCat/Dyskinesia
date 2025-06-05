@@ -18,9 +18,14 @@ function subroutine
     # Common code hoisted to save space and minimise copy-paste.  Debug
     # echo stmts require invocation in a terminal. Don't forget to quote
     # $app and $exe in the calls of this function.
-    ws="$1"; app="$2"; exe="$3";
+    ws="$1"; app="$2";
+    # exe is often just one command but we can pack several commnds
+    # using colon as the separator for two or more commands cf $PATH.
+    exe=$(echo "$3" | awk -F: '{print $1}')
+    aux=$(echo "$3" | awk -F: '{print $2}')
     echo "app=$app"
     echo "exe=$exe"
+    echo "aux=$aux"
     # STEP 1 Visit the target workspace if not already there.
     cws=$(swaymsg -p -t "get_workspaces" | grep "Workspace $ws (focused)" )
     if [ "_$cws" = "_" ]; then
@@ -39,11 +44,11 @@ function subroutine
     if [ "_$wsapp" = "_" ]; then
 	echo "Representation not matched, launching \"${exe}\" now"
 	swaymsg "exec ${exe}"
-	postlaunch "$ws"	
+	postlaunch "$ws" "$aux"	
     elif [ "_$wsapp" = "_Representation: H[]" ]; then
 	echo "Representation suggests empty workspace, launching \"${exe}\" now"
 	swaymsg "exec ${exe}"
-	postlaunch "$ws"
+	postlaunch "$ws" "$aux"
     elif [ "_$wsapp" = "_Representation: H[null]" ]; then
 	echo "Representation null, app $app not listed, visit workspace $ws only"
     else
@@ -54,7 +59,7 @@ function subroutine
 
 #
 # Helper function for apps that were launched on the current visit to
-# workspace $1.
+# workspace $1. Extended with $2 aux app(s) to be launched alongside.
 #
 function postlaunch
  {
@@ -76,6 +81,17 @@ function postlaunch
 	(*)
 	    ;;
     esac
+    # KISS just one aux app {or none).
+    auxexe0=$(echo "$aux" | awk -F: '{print $2}')
+    case "auxexe0" in 
+	# Choices : our two blessed text editors and our two preferred
+	# terminals. Plus whatever takes your fancy. I don't know the
+	# command that is to neovim as emacsclient is to emacs.
+	(emacsclient|nvim|foot|kgx|alacritty|emacs-terminal)
+	    sleep 1s
+	    swaymsg "exec $auxexe0"
+	    ;;
+    esac
  }
 
 
@@ -85,16 +101,18 @@ function postlaunch
 	# instances that were there before will survive, =UNLESS= you
 	# or anybody or anything else reduces the number of instances
 	# to ZERO, in which case the workspace will offer to rebuild
-	# itself with four fresd instances ready by the bext visit
+	# itself with four fresh instances ready by the next visit -
 	# depending upon your response to a dialog that has a short
-	# timeout before asssuming rebuild is requested.
+	# timeout before assuming rebuild is requested.
 
 #
 # START HERE.
 #
  
 # Each workspace can have its own custom behaviour. Apply double
-# quotes and semi colons defensively.
+ # quotes and semi colons defensively.
+
+ # swaymsg -p -t get_workspaces
 
  # Thunar progress indicator made floating so it stands out. Helps
  # avoid file corruption or truncation.
@@ -132,7 +150,7 @@ case "$ws" in
 	subroutine "$ws" "$app" "$exe"
 	;;
     (01X)
- 	# BpyTOP. alacri]]tty can set its app_id with -class.
+ 	# BpyTOP. alacritty can set its app_id with -class.
 	# Beautiful but hungry.
 	app="bpytop"; exe="alacritty --class bpytop -e bpytop";
 	subroutine "$ws" "$app" "$exe"
@@ -148,11 +166,15 @@ case "$ws" in
 	app="vlc"; exe="vlc";
 	subroutine "$ws" "$app" "$exe"
 	;;
+    (84|85)
+	app="scrcpy"; exe="scrcpy";
+	subroutine "$ws" "$app" "$exe"
+	;;
     (55)
 	app="org.mozilla.firefox"; exe="firefox";
 	subroutine "$ws" "$app" "$exe"
 	;;
-    (44X|66X)
+    (44X|67X)
 	# Files alias nautilus from GNOME.
 	# Open current working directory as it was at invocation.
 	# Possible "consolidate workspaces" bug, otherwise much
@@ -160,27 +182,20 @@ case "$ws" in
 	app="org.gnome.Nautilus"; exe="$(printf "xdg-open %s" $(pwd))";
 	subroutine "$ws" "$app" "$exe"
 	;;
-    (44|66)
+    (67|44)
 	# Thunar from XFCE.
 	# 2 workspaces, 1 even 1 odd.
  	# Fedora/ Sway spin "recommended" DE file manager.
 	# Opens current working directory as it was at invocation. 
-	app="thunar"; exe="$(printf "thunar %s" $(pwd))";
+ 	app="thunar"; exe="$(printf "thunar %s" $(pwd))";
 	subroutine "$ws" "$app" "$exe"
 	;;
-    (45)
-	# CD burner on external USB. (1) accepts ISOs (2) creates Data
-	# CDs from files (3) creates Audio CDs (4) erases CD-RW. It is
-	# put on an odd-numbered workspace to be opposite Files.
-	app=xfburn; exe=xfburn;
-	subroutine "$ws" "$app" "$exe"
-	;;
-    (65X|43X)
+    (66X|43X)
 	# This workspace starts with four instances of "foot".
 	app="foot"; exe="someterminals.script foot 4 32";
 	subroutine "$ws" "$app" "$exe"
 	;;
-    (65|43)
+    (66|43)
 	# This workspace starts with four instances of "kgx".
 	app="kgx"; exe="someterminals.script kgx 4 ${ws}";
 	subroutine "$ws" "$app" "$exe"
@@ -190,10 +205,16 @@ case "$ws" in
 	subroutine "$ws" "$app" "$exe"
 	;;
     (17)
-	# GNOME Disks.
 	app="gnome-disks"; exe="gnome-disks";
 	subroutine "$ws" "$app" "$exe"
-    (14)
+	;;
+    (15)
+	# CD burner on external USB. (1) accepts ISOs (2) creates Data
+	# CDs from files (3) creates Audio CDs (4) erases CD-RW.
+	app=xfburn; exe=xfburn;
+	subroutine "$ws" "$app" "$exe"
+	;;
+   (14)
 	# DVD ripper using either DVD drive.  YOU MUST BUILD MAKEMKV
 	# FROM SOURCE & BLOB for this script to work, but if you do
 	# not, the executable fedora provides does still work.
@@ -217,9 +238,18 @@ case "$ws" in
 	# diagnostics (setting levels, swapped speakers) and an
 	# override condttion for for the sway idle inhibitor. Type m
 	# in the video window for mute toggle. Type space to pause
-	# (stfu) or play. x
-	app="mpv"; exe="mpv --loop-file 1k ${SWAY_ASSETS_DIR}/intro.mp4";
-	subroutine "$ws" "$app" "$exe"
+	# (stfu) or if.
+
+	# Symlinking the intro video to "intro.mp4" keeps the asset
+	# folder size down. if no such symlink and no such regular
+	# file then no video is played.
+	if [ $(test \
+		   -f ${SWAY_ASSETS_DIR}/intro.mp4 -o \
+		   -L ${SWAY_ASSETS_DIR}/intro.mp4 ) ]; then
+  	    app="mpv";
+	    exe="mpv --loop-file 1 ${SWAY_ASSETS_DIR}/intro.mp4";
+	    subroutine "$ws" "$app" "$exe"
+	fi
 	;;
     ([0-9][0-9])
 	# Visit a workspace, but do no application housekeeping other

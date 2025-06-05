@@ -11,14 +11,14 @@ export SWAY_CONFIG_DIR=${HOME}/.config/sway/config.d
 export SWAY_SCRIPTS_DIR=${HOME}/.config/sway/scripts.d
 export SWAY_ASSETS_DIR=${HOME}/.config/sway/assets.d
 
-#  Loop duration is (end minus start) ideally one minute or less.
+# Loop duration is (end minus start) ideally one minute or less.
 secs=0
-while [ $secs -le 65 ];
+while [ ${secs} -le 64 ];
 do
-    case "$secs" in
+    # The case variable counts integer seconds, it is not a workspace number.
+    case "${secs}" in 
 
 	### REINSTALL GOODIES BEGIN
-	
 	(1)
 	    # Nothing should have been showing at this stage.
 	    ${SWAY_SCRIPTS_DIR}/goodies.script hide
@@ -26,42 +26,56 @@ do
 
 	### INSTALL POPUPTOOLS
 	(2)
-	    # Destroy all current popuptools and then install the two PopUp
-	    # Terminals and the Volume Control on the scratchpad. Manifest as
-	    # a brief flash. Rebuilding at any time is supported via the menu
-	    # in the goodies.script green nagbar. $mod+f12 toggles that nagbar
-	    # between show & hide.
+	    # Destroy all current popuptools and then install the two
+	    # PopUp Terminals and the Volume Control on the
+	    # scratchpad. Manifest as a brief flash. Rebuilding at any
+	    # time is supported via the menu in the goodies.script
+	    # green nagbar. f12 toggles that nagbar between show &
+	    # hide.
 	    swaymsg "exec \"${SWAY_SCRIPTS_DIR}/goodies.script popuptools\"" ;
 	    ;;
 
 	### INSTALL WORKSPACES
 	
 	# In order to keep each app on its associated workspace brute
-	# force snd ignorance staggers the app launches in time, hence
+	# force and ignorance staggers the app launches in time, hence
 	# the case in a loop.
 
 	(9)
-	    swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 00\""
+	    # Choose introduction video on 00 or spotify on 22.
+	    speak-ng "spotify"
+	    swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 22\""
 	    ;;
 	(14)
-	    swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 66\""
+	    ### ODD 67 thunar pair with EVEN 66 kgx OR EVEN 44 thunar
+	    speak-ng"thunar by 4"      	
+	    swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 67\""
 	    ;;
 	(21)
-	    swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 65\""
+	    ### EVEN 66 kgx pair with ODD 67 thunar -or- ODD 43 kgx
+	    speak-ng "kgx by 4"
+	    swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 66\""
 	    ;;
 	(29)
+	    ### EVEN 44 thunar pair with ODD 43 kgx -or-EVEN 67 thunar
+	    speak-ng "thunar by 4"      
 	    swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 44\""
 	    ;;
 	(36)
+	    # ODD 43 kgx pair with EVEN 44 thunar -or- EVEN 66 kgx
+	    speak-ng "kgx by 4"
 	    swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 43\""
 	    ;;
 	(44)
+	    speak-ng "emacs"
 	    swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 33\""
 	    ;;
 	(50)
+	    speak-ng "firefox"
 	    swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 55\""
 	    ;;
 	(56)
+	    speak-ng "htop"
 	    swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 01\""
 	    ;;
 	  
@@ -78,35 +92,44 @@ do
 	# to do the USB drives, to be shown as mounted by nautilus in
 	# the sidebar.
 	(57)
-	    swaymsg "exec 'udiskie -a'"
+	    speak-ng "disks coming up"
+	    swaymsg "exec 'udiskie -a'" 
 	    ;;
 
 	# Finally, post the goodies banner (runtime help) and the
 	# menu, in that order, both on the preferred output. This
 	# snippet hasn't been rolled into the timing loop because
-	(64)
+	(64) 
 	    swaymsg "focus output VGA-1" ; sleep 1s ;
+	    speak-ng "Function key F 12 toggles banner"
 	    swaymsg "exec 'goodies.script show'"; sleep 1s ;
+	    speak-ng "Use escape key to dismiss menu"
 	    swaymsg "exec 'rofi -show combi -combi-modes window\#drun -modes'" 
 	    ;;
-	# The windows section of the winapps menu is at the top and it
-	# lists the popuptools first then the apps tht have recently
-	# been setup in order of their appearance. The apps section of
-	# the winapps menu lists available gui apps in alphabet
-	# order. There is a minor maintenance burden here, the winapps
-	# menu invoked here should be similar to the $winappsmenu
-	# invoked by the binding in 'config'.  To dismiss the menu
-	# without focus or launch press Escape.
+	# FOOTNOTE: The windows section of the winapps menu is at the
+	# top and it lists the popuptools first then the apps that
+	# have recently been setup in order of their appearance. The
+	# apps section of the winapps menu lists available gui apps in
+	# alphabetical order. There is a minor maintenance burden
+	# here, the winapps menu invoked here should be similar to the
+	# $winappsmenu invoked by the binding in 'config'.  To dismiss
+	# the menu without focus or launch press Escape.
 
 	(*)
-	    # More usefuk and less annoying than you might think.
-	    speak-ng "$secs"
+	    # Debug only.
+	    ### speak-ng "$secs"
+	    # A countdown is informative and dramatic outside debug.
+	    speak-ng "$((64-secs))"
 	    ;;
     esac
+    # Changing this to use milliseconds and incrementing by (1,000
+    # plus or minus 100) ms provides fine tuning but KISS for now.
     secs=$((secs + 1))
+    sleep 1s
 done
 
 #
 # Done
 #
+
 
