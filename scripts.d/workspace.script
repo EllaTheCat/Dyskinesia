@@ -11,7 +11,9 @@ export SWAY_SCRIPTS_DIR=${HOME}/.config/sway/scripts.d
 export SWAY_ASSETS_DIR=${HOME}/.config/sway/assets.d
 #
 # Visit the workspace $1 with an app $2 expected to be running there,
-# and $3 launched by "$exe".
+# and $3 launched by "$exe". $exe can head a list of :$aux items that
+# launch when $exe launches. Launching depends only on $app (app_id).
+# Workspace 99 is the testbed for lists.
 #
 function subroutine
 {
@@ -59,7 +61,7 @@ function subroutine
 
 #
 # Helper function for apps that were launched on the current visit to
-# workspace $1. Extended with $2 aux app(s) to be launched alongside.
+# workspace $1. Extended with $aux app(s) to be launched alongside $exe.
 #
 function postlaunch
  {
@@ -74,20 +76,20 @@ function postlaunch
 	    # workspaces on each output provided by the status bar. 
 	    swaymsg  "fullscreen disable"
 	    ;;
-	(vv|99)
+	(vv)
 	    sleep 3s
 	    swaymsg  "fullscreen toggle global"
 	    ;;
 	(*)
 	    ;;
     esac
-    # KISS just one aux app {or none).
-    auxexe0=$(echo "$aux" | awk -F: '{print $2}')
-    case "auxexe0" in 
+    # KISS just one aux app {or none) for now, but it should scale up.
+    auxexe0=$(echo "$aux" | awk -F: '{print $1}')
+    case "$auxexe0" in 
 	# Choices : our two blessed text editors and our two preferred
 	# terminals. Plus whatever takes your fancy. I don't know the
 	# command that is to neovim as emacsclient is to emacs.
-	(emacsclient|nvim|foot|kgx|alacritty|emacs-terminal)
+	(emacsclient|nvim|foot|kgx|alacritty|emacs-terminal|qpwgraph)
 	    sleep 1s
 	    swaymsg "exec $auxexe0"
 	    ;;
@@ -97,7 +99,7 @@ function postlaunch
 
 ### A SIDEBAR REGARDING MULTIPLE-TERMINAL-INSTANCE WORKSPACES ###
 
-	# You can add more instances or delete some instances and the
+	# You can add more instances or delete some instances and the
 	# instances that were there before will survive, =UNLESS= you
 	# or anybody or anything else reduces the number of instances
 	# to ZERO, in which case the workspace will offer to rebuild
@@ -153,6 +155,18 @@ case "$ws" in
  	# BpyTOP. alacritty can set its app_id with -class.
 	# Beautiful but hungry.
 	app="bpytop"; exe="alacritty --class bpytop -e bpytop";
+	subroutine "$ws" "$app" "$exe"
+	;;
+    (99)
+	# Two apps: Pulseaudio Volume Control Qt (static alternative
+	# to the popup) =and= a PipeWire video and audio connections
+	# graph (like a London Underground map) also Qt.
+
+	# The app id of the leader app that the other apps follow.
+	app="pavucontrol"
+	# The commands thst launch the apps, leader app command at the
+	# head, commands separated with colons.
+	exe="pavucontrol-qt:qpwgraph"
 	subroutine "$ws" "$app" "$exe"
 	;;
     (93)

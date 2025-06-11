@@ -31,10 +31,6 @@ function addcmd1
 	    sway "exec ssh rpi4b sudo reboot"
 	    ;;
 	(2)
-	    sway "nop"
-	    ;;
-	# Column7
-	(7)
 	    # Change colour temperature according to time of day (toggle).
 	    if [ $(pgrep -c -f wlsunset) -eq 1 ]; then
 		pkill -f wlsunset
@@ -42,10 +38,14 @@ function addcmd1
 		sway "exec wlsunset"
 	    fi
 	    ;;
+	# Column7
+	(7)
+            sway "exec foot -e ${HOME}/local/private/bin/LETSGO" 
+	    ;;
 	(4)
 	    # Private.
-	    sway "exec foot -e ${HOME}/local/private/bin/4kRH10" 
-	    ;;
+            sway "exec foot -e ${HOME}/local/private/bin/4kRH10" 
+	    ;;	
 	(1)
 	    # Show this popup (Network Manager)
 	    # Github- https://github.com/Blazzzeee/network_manager_ui

@@ -13,12 +13,12 @@
 # (unless in default mode). Next on the left are numbered tabs which
 # indicate the active double-digit workspaces on that output, ranging
 # 00 to 99, even mumbered on the left, odd numbered in the centre, and
-# highest numbered on the right. Workspaces display containers that
+# numbered {00,01,98,99} on the right. Workspaces display containers that
 # are either tiled or floating. A green banner that can be toggled
 # between show and hide states with key f12 is shown at the very
 # bottom of the active screen, below the status bar. On the left of
 # the green banner subliminal hints are displayed, on the right is a
-# small mouse driven menu.
+# small mouse driven menu including means to exit sway.
 
 ### IMPORTANT EARLY DECLARATIONS ###
 
@@ -32,6 +32,12 @@ set $SWAY_ASSETS_DIR  ~/.config/sway/assets.d
 # too late to launch the script. Start it asap.
 exec_always $SWAY_SCRIPTS_DIR/autotiling
 
+# The 'goodies banner' is mentioned at several points in this config,
+# make sure the user can access it. The earlier config appears in this
+# file the less likely to ne broken.
+bindsym f12 exec $SWAY_SCRIPTS_DIR/goodies.script
+ 
+
 ### NON-NEGOTIABLE MODIFIERS - DO NOT EDIT THESE BINDINGS!
 
 set $mod Mod4
@@ -39,47 +45,101 @@ set $alt Mod1
 
 # Later we swap the Ctrl and Alt keys at the bottom left to be more
 # comfortable and we set Caps Lock to Escape. That's why you must
-# respect $mod and $alt set here. # I miss "xcape" from my i3/X11 days,
-# the Alt keys would work as Alt modifiers but standalone they behaved
-# as Escape.
+# respect $mod and $alt set here.
+
+# I miss "xcape" from my i3/X11 days, the Alt keys would work as Alt
+# modifiers but standalone they behaved as Escape.
 
 ### MESSED-UP MODIFIERS?
 
-# When using a 60% keyboard, should you notice that the three
-# modifiers bottom left are scrambled eg Super swapped wth Control
-# when you expect Alt swapped wth Control, then Fn+Esc resets AND Fn+n
-# to use PC layout instead of Mac layout. It's due to the keyboard not
-# this software!
+# When using a 60% keyboard, such as the Evision_RGB_Keyboard used by
+# ellathecat, should you notice that the three modifiers bottom left
+# are scrambled, eg Super is swapped wth Control when you expect Alt
+# swapped wth Control, it is due to the keyboard feature that
+# configures the keyboard for PC ot Mac, not this software!
+
+# You can recover from this misconfiguration on-the-fly, yoy dont have
+# to exit Sway. On the Evision_RGB_Keyboard: Fn+Esc resets the
+# keyboard, Fn+N configures the keyboard to use PC layout
+# insteaFd of Mac layout, which is Fn+B.
 
 ### RELOAD ###
 
 # Reload the configuration from $SWAY_CONFIG_FILE in default mode.
-# (This does not refresh the goodies banner, use f12 to do that.)
+# (This does not refresh the goodies banner, use f12 to do  that.)
 bindsym Shift+$mod+c mode default, reload ;
-
+ 
 ### TERMINALS
 
-# If only terminal arguments didn't differ in the details between
+# If only terminal arguments didn't differ in the details between #
 # popular terminals.  On ellathecat's machine we use gnome 'kvm' for
 # popup terminals and 'foot' for regular terminals instead of
 # rofi-sensible-terminal. Workspaces with four terminals can be
 # instantiated with kgx or foot.
 
-# Right handed and left handed options for such a frequently used
-# binding. Choose Escape here and Tab on a similar binding later, or
-# Tab here and Escape on the similar binding later, see (MORE)
-# TERMINALS. EllaTheCat prefers Tab on mode $Terminal.
-bindsym $mod+Escape exec foot
-#indsym $mod+Tab    exec foot
+# It is prudent to offer right handed and left handed options for such
+# a frequently used binding.
 
-### POPUP TERMINAL
+bindsym $mod+Return exec foot
+### commented out --> ### bindsym $mod+Tab exec foot   
+             
+# The left hand binding of TAB exhibits symmetry with Return for the
+# right hand. It is advantageous with keyboards that lack Super_R. It
+# is commented out in favour of binding to a mode, to be described
+# below.
+
+# The $LeftHandTab mode binds TAB such that the left hand can type TAB
+# very soon sfter entering the mode with $mod+Tab.  This provides a
+# good replacement for the commented-out direct invocation of a
+# terminal.
+
+# The $LeftHandTab mode binds unmodified lower case single letters to
+# invoke other terminal types. or scripts. The right hand can operate
+# these keys.
+
+# The $LeftHandTab mode binds "space" to "mode default" because being
+# able to get mode default by pressing "space" is required for all
+# non-default modes _without_exception_, even here where most bindings
+# return to default mode automatically.
+
+# The $LeftHandTab mode includes three bindings for "scratchpad show"
+# because it provides quick access to popuptools (q.v.). Most modes
+# have these
+
+# Binding Mode Indicator (BMI). Black text on yellow background to jog
+# the user's memory about the mode. There's limited space so one can't
+# expect in-depth help. You can put any _unique_ non-zero-length
+# printable string as BMI text. This config puts the mode name in
+# angle brackets folllowed by binding hints.
+set $LeftHandTab  <LeftHandTab> TAB [a]lacritty [f]oot [k]gx [u]rxvt [x]fce4
+
+mode "$LeftHandTab" {
+    bindsym space mode default;
+    bindsym $mod+minus scratchpad show;
+    bindsym Left+Up scratchpad show;
+    bindsym Alt+slash scratchpad show
+ 
+    # TAB should invoke your favourite terminal.
+    bindsym Tab mode default, exec foot;
+    # Other terminals invoked by the initial letter of their name,
+    # without any modifiers (where unique).
+    bindsym a mode default, exec alacritty;
+    bindsym f mode default, exec foot;
+    bindsym k mode default, exec kgx;
+    bindsym u mode default, exec urxvt;
+    bindsym x mode default, exec xfce4-terminal;
+} 
+bindsym $mod+Tab mode "$LeftHandTab"
+
+### POPUP TERMINALS
 
 # The two 'LHS/RHS PopUp Terminals' are a nod to classic dropdown
 # terminals such as 'yakuake'. See 'goodies.script' for details. They
 # are held in the scratchpad, you might want to take a look.
 
-# Show the next scratchpad window OR hide the currently visible one
-# ready to show the next one on the next keypress.
+# In default mode, show the next scratchpad window OR hide the
+# currently visible one ready to show the next one on the next
+# keypress.
 
 bindsym $mod+minus scratchpad show
 bindsym Left+Up scratchpad show
@@ -95,9 +155,10 @@ bindsym Alt+slash scratchpad show
 # Up arrow keysyms but Alt and / - the user has to press Alt like a
 # modifier.
 
-# You can rebuild the popups at any time via the menu on the green
-# banner managed by 'goodies.script'. For example you'd lose a
-# terminal's data but you'd reset it were it frozen.
+# You can rebuild the popups at any time via the menu item "rebuild
+# popuptools" on the green banner managed by 'goodies.script'. For
+# example you'd lose a terminal's data but you'd reset it were it
+# frozen. Press F12 to show or hide the green banner.
 
 ### POPUPS IN FULLSCREEN
 
@@ -111,32 +172,6 @@ bindsym Alt+slash scratchpad show
 ### i3 4.24 ### popup_during_fullscreen all
 ### sway    ### popup_during_fullscreen smart
 popup_during_fullscreen smart
-
-### (MORE) TERMINALS
-
-# Escape is put on CapsLock for a two-handed binding that lets the
-# user choose a terminal on-the-fly. EllaTheCat prefers Tab on mode
-# $Terminal.
-set $Terminal terminals: a e f k u x  
-
-mode "$Terminal" {
-    bindsym space mode default;
-    bindsym $mod+minus scratchpad show
-    bindsym Left+Up scratchpad show
-    bindsym Alt+slash scratchpad show
-   
-    bindsym a mode default, exec alacritty;
-    bindsym e mode default, exec emacs-terminal;
-    bindsym f mode default, exec foot;
-    bindsym k mode default, exec kgx;
-    bindsym u mode default, exec urxvt;
-    bindsym x mode default, exec xfce4-terminal;
-
-    # Easy to type needs customising, this is tailored for EllaTheCat.
-    bindsym Tab mode default, exec foot;
-} 
-#indsym $mod+Escape mode "$Terminal"
-bindsym $mod+Tab    mode "$Terminal"
 
 ### MOUSE LOCATOR
 
@@ -186,7 +221,6 @@ seat seat0 xcursor_theme phinger-cursors-light 54
 # Prevent the text cursor from losing window focus because the mouse
 # has moved outside the window (by accident).
 focus_follows_mouse no
-
 
 ### ARROW KEYS (on 60% keyboard layout)
 
@@ -301,13 +335,26 @@ bindsym slash+Menu $winappsmenu
 bindsym Up+Right        exec speak-ng "quack"
 bindsym Control+slash   exec speak-ng "quack"
 
+### XF86 KEYS
+
+# Nothing to do with Sway but essential with apps. Don't go mad we
+# only need two, KISS. The volume controls don't require the media
+# player (or whatever) window to be in focus.
+
+# Fn+Z Keyboard repeat rate is sufficient to reduce volume from very
+# loud to fairly quiet quickly enough to protect ears and equipment.
+bindsym XF86AudioLowerVolume exec wpctl set-volume @DEFAULT_SINK@ 0.02-
+# Fn+X
+bindsym XF86AudioRaiseVolume exec wpctl set-volume @DEFAULT_SINK@ 0.02+
+
 ### BINDING MODE INDICATOR (BMI)
+
+# BMI was briefly introduced in the description of mode LeftHandTab.
 
 # The BMI consists of black text on a bright yellow background. It is
 # located on the left of a status bar except for default mode when it
 # is absent. It indicates the current mode explicitly as an informal
-# requirement; here the mode is implicit because the BNI lists (only
-# some of) the bindings for the mode, which the user requested.
+# requirement,
 
 # In the next section there is a mode called $Kill; note the dollar
 # sign. The "truename" of the mode is the long string consisting of
@@ -323,55 +370,65 @@ bindsym Control+slash   exec speak-ng "quack"
 # of the same key. It has a cancel option: press space after the first
 # key press. It replaces the classic $mod+q binding.
 
-set $Kill Shift+Super+Q kill +A +W +S next ws prev ws next op
+set $Kill <Kill> Shift+Super +Q kill +A next ws +W prev ws +E emacs Shift [afkntux]
 mode "$Kill" {
     bindsym space mode default
-    bindsym Shift+$mod+minus scratchpad show
-    
+    bindsym $mod+minus scratchpad show
+    bindsym Left+Up scratchpad show
+    bindsym Alt+slash scratchpad show
+
+    # Use W and A keys adjacent to Q to navigate to adjacent
+    # workspaces on the current output. You don't have to prefix with
+    # Q while repeating W or A eg just QWWWWW not QWQWQWQW.
     bindsym Shift+$mod+q  mode default, kill;
     bindsym Shift+$mod+a  workspace next_on_output
     bindsym Shift+$mod+w  workspace prev_on_output
-    bindsym Shift+$mod+s  focus output next
+
+    # Options to kill terminals en-masse cos we can launch en-masse.
+    # [a]lacritty [f]oot [k]gx [u]rxvt [x]fce
+    bindsym Shift+F  mode default, exec 'killall foot';
+    bindsym Shift+K  mode default, exec 'killall kgx';
+    bindsym Shift+N  mode default, exec 'killall nautilus';
+    bindsym Shift+T  mode default, exec 'killall thunar';
+    bindsym Shift+U  mode default, exec 'killall urxvt';
+    bindsym Shift+X  mode default, exec 'killall xfce4-terminal';
 
     # Sometimes EMACS DISAPPEARS WHILE TYPING because a typo has made
     # it transparent.  THIS KEY RESTORES EMACS.
     #
     # It has no modifiers unlike most others in this mode, and it also
     # restores default mode. Press "Super+Shift+q" ONCE, the $Kill BMI
-    # appears, then press "Tab" on its own, the $Kill BMI disappears,
+    # appears, then press "Super+Shift+e", the $Kill BMI disappears,
     # and Emacs reappears. This has no BMI text, ('cos it's a bugfix).
-    bindsym Tab [title=\"Emacs\"] mode default, opacity 1.0;
-
-    # Options to kill apps launched at startup (see "setup.script").
-    bindsym Shift+E  mode default, exec 'killall emacs-terminal'
-    bindsym Shift+F  mode default, exec 'killall foot'
-    bindsym Shift+K  mode default, exec 'killall kgx'
-    bindsym Shift+N  mode default, exec 'killall nautilus'
-    bindsym Shift+T  mode default, exec 'killall thunar'
-    bindsym Shift+W  mode default, exec 'killall firefox;
+    bindsym Shift+$mod+e [title=\"Emacs\"] mode default, opacity 1.0;
 }
 bindsym Shift+$mod+q mode "$Kill"
 
-# The "double tap to end sway session" mode terminates sway with two
-# presses of the same key, 'x'.  It has a cancel option: press space
-# after the first key press. It kills all windows rather than a single
-# window.
-#
-# Instead of performing a simple 'sway exit' control is given to the
-# goodies script which will first unmount external disks and then
-# gently poweroff or reboot or sway exit without user intervention.
-# The mouse can be used like it is used in goodies.script to cancel.
-set $SwayExit Shift+$mod x to exit sway, space to cancel
-mode "$SwayExit" {
-    bindsym space mode default
-    bindsym $mod+minus scratchpad show
-    bindsym $alt+Delete scratchpad show
-    # Same as used to enter this mode.
-    bindsym Shift+$mod+x mode default,\
-	    exec "$SWAY_SCRIPTS_DIR/goodies.script \
-are-you-sure sudo poweroff"
-}
-bindsym Shift+$mod+x mode "$SwayExit"
+### LEAVING SWAY
+
+# You cannot leave sway using the keyboard alone; this is a mitigation
+# for typos, Pressing F12 will show (or hide) the goodies banner, a
+# green nagbar, which has a mouse driven menu for leaving sway.
+
+### GOODIES MENU BAR
+
+# A horizontal banner menu anchored to the top or bottom edge of the
+# active output. f12 toggles between shown and being hidden.  See the
+# file "goodies.script" for explanations, excuses, etc. The X at the
+# right is used to remove spurious copies of the goodies banner when
+# debugging.
+
+# - "reload snd refresh" does a sway reload and refreshes the menu
+# should the script that defines it have changed.
+
+# - "unmount external disks" does what it says for USB connected
+# storage. The following three options also unmount external disks
+# before leaving sway.
+
+# -reboot = Unmount... exit sway, reboot, show login dialog
+# -poweroff = Unmount... exit sway, power off
+# -exit = Unmount... exit sway, show login dialog
+
 
 ### OUTPUT CONFIGURATION
 
@@ -494,8 +551,6 @@ set $Resize mod+1of4cursorkeys Resize focused container.    Move=mod+m. Focus=mo
 # Change Focus (using a mode).
 mode "$Focus" {
     bindsym space mode default
-    bindsym $mod+minus scratchpad show
-    bindsym $alt+Delete scratchpad show
 
     bindsym $mod+m mode "$Move"
     bindsym $mod+r mode "$Resize"
@@ -530,8 +585,6 @@ bindsym $mod+f mode "$Focus"
 # Move the focused container (using a mode).
 mode "$Move" {
     bindsym space mode default
-    bindsym $mod+minus scratchpad show
-    bindsym $alt+Delete scratchpad show
     
     bindsym $mod+f mode "$Focus"
     bindsym $mod+r mode "$Resize"
@@ -555,8 +608,6 @@ bindsym $mod+m mode "$Move"
 # Resize the focused container (using a mode).
 mode "$Resize"  {
     bindsym space mode default
-    bindsym $mod+minus scratchpad show
-    bindsym $alt+Delete scratchpad show
 
     bindsym $mod+f mode "$Focus"
     bindsym $mod+m mode "$Move"
@@ -587,7 +638,11 @@ bindsym $mod+r mode "$Resize"
 
 bindsym $alt+$mod+f fullscreen toggle
 bindsym $alt+$mod+g fullscreen toggle global
-bindsym $alt+g [title="mpv"] fullscreen toggle global
+
+# This does  not require mpv to  have focus - ellathecat  makes mpv go
+# fullscreen global  often enough  to justify  a special  case: recall
+# $mod+f had a conflict $mod+g did not.
+bindsym $mod+g [title="mpv"] fullscreen toggle global
 
 # Abstracted aliases for the (three) outputs.
 # Example here is a 3 monitor configuration.
@@ -631,11 +686,9 @@ set $rightextraop HDMI-A-1
 # fencing.  In our opacity example, If we insist on ten rather than
 # eleven opacity levels, they are 0, 0.1 1 recurring, ... 0.8 8
 # recurring, 0.9 9 recurring rounded to 1.0 }.
-	    
 
 # / P Q = visit ...  equivalent  $mod+P then Q
 # * P Q = move ...   equivalent  $mod+shift+P then Q
-
     
 ### 2ND NUMERIC KEYPAD e.g. press KP_8
 
@@ -1705,28 +1758,27 @@ set $ntrcmd8 ntr command number 8-
 set $ntrcmd9 ntr command number 9-
 
 # Modifier key bindings will become increasingly cumbersome. We used
-# left Super and left Alt for $ADD and here we can use left Super and
-# lwft Control for $NTR; it doesn't matter if used xkb to swap Control
-# and Alt or not, we can always swap them here or not. Both modifiers
-# are adjacent in both $ADD and $NTR hence can be pressed together
-# with a fat finger or thumb. If you are daft wnough to build more
-# than the two workspace tables and the two command tables, modifiers
-# will bite you.
+# left Super and left Alt for $ADD and here we can use left Shift plus
+# left Super and left Alt for $NTR. Both modifiers are adjacent in
+# both $ADD and $NTR hence can be pressed together with a fat finger
+# or thumb HOWEVER pressing Shift as well is awkward. If you are daft
+# enough to build more than the two workspace tables and the two
+# command tables, modifiers will bite you. Shame Control+$mod doesn't
+# work ... keep trying.
+bindsym Control+$mod+0 exec speak-ng "control super zero"
+bindsym Control+$alt+0 exec speak-ng "control alt zero"
+ 
 
-# We are used to the literal "Shift" as a modifier, here we use the
-# literal "Control" as a modifier. Based on a hunch that's what you
-# must do, confirmed by testing.
-
-bindsym Control+$mod+0 mode "$ntrcmd0"
-bindsym Control+$mod+1 mode "$ntrcmd1"
-bindsym Control+$mod+2 mode "$ntrcmd2"
-bindsym Control+$mod+3 mode "$ntrcmd3"
-bindsym Control+$mod+4 mode "$ntrcmd4"
-bindsym Control+$mod+5 mode "$ntrcmd5"
-bindsym Control+$mod+6 mode "$ntrcmd6"
-bindsym Control+$mod+7 mode "$ntrcmd7"
-bindsym Control+$mod+8 mode "$ntrcmd8"
-bindsym Control+$mod+9 mode "$ntrcmd9"
+bindsym Shift+$alt+$mod+0 mode "$ntrcmd0"
+bindsym Shift+$alt+$mod+1 mode "$ntrcmd1"
+bindsym Shift+$alt+$mod+2 mode "$ntrcmd2"
+bindsym Shift+$alt+$mod+3 mode "$ntrcmd3"
+bindsym Shift+$alt+$mod+4 mode "$ntrcmd4"
+bindsym Shift+$alt+$mod+5 mode "$ntrcmd5"
+bindsym Shift+$alt+$mod+6 mode "$ntrcmd6"
+bindsym Shift+$alt+$mod+7 mode "$ntrcmd7"
+bindsym Shift+$alt+$mod+8 mode "$ntrcmd8"
+bindsym Shift+$alt+$mod+9 mode "$ntrcmd9"
                     
 mode "$NTR" {
     bindsym space mode default
@@ -1782,9 +1834,38 @@ mode "$ntrcmd0" {
     bindsym KP_8 mode default, exec ntrcmd0.script 8;
     bindsym KP_9 mode default, exec ntrcmd0.script 9;
     bindsym KP_Decimal mode default, exec ntrcmd0.script D;
+ }
+
+mode "$ntrcmd1" {
+    bindsym space mode default
+    bindsym minus scratchpad show
+
+    bindsym 0 mode default, exec ntrcmd1.script 0;
+    bindsym 1 mode default, exec ntrcmd1.script 1;
+    bindsym 2 mode default, exec ntrcmd1.script 2;
+    bindsym 3 mode default, exec ntrcmd1.script 3;
+    bindsym 4 mode default, exec ntrcmd1.script 4;
+    bindsym 5 mode default, exec ntrcmd1.script 5;
+    bindsym 6 mode default, exec ntrcmd1.script 6;
+    bindsym 7 mode default, exec ntrcmd1.script 7;
+    bindsym 8 mode default, exec ntrcmd1.script 8;
+    bindsym 9 mode default, exec ntrcmd1.script 9;
+    bindsym period mode default, exec ntrcmd1.script D;
+
+    bindsym KP_0 mode default, exec ntrcmd1.script 0;
+    bindsym KP_1 mode default, exec ntrcmd1.script 1;
+    bindsym KP_2 mode default, exec ntrcmd1.script 2;
+    bindsym KP_3 mode default, exec ntrcmd1.script 3;
+    bindsym KP_4 mode default, exec ntrcmd1.script 4;
+    bindsym KP_5 mode default, exec ntrcmd1.script 5;
+    bindsym KP_6 mode default, exec ntrcmd1.script 6;
+    bindsym KP_7 mode default, exec ntrcmd1.script 7;
+    bindsym KP_8 mode default, exec ntrcmd1.script 8;
+    bindsym KP_9 mode default, exec ntrcmd1.script 9;
+    bindsym KP_Decimal mode default, exec ntrcmd1.script D;
 }
 
-# ntrcmd1 through ntrcmd8 are left as an exercise...
+# ntrcmd2 through ntrcmd8 are left as an exercise...
 
 mode "$ntrcmd9" {
     bindsym space mode default
@@ -1797,7 +1878,7 @@ mode "$ntrcmd9" {
     bindsym 4 mode default, exec ntrcmd9.script 4;
     bindsym 5 mode default, exec ntrcmd9.script 5;
     bindsym 6 mode default, exec ntrcmd9.script 6;
-    bindsym 7 mode default, exec .ntrcmd9.script 7;
+    bindsym 7 mode default, exec ntrcmd9.script 7;
     bindsym 8 mode default, exec ntrcmd9.script 8;
     bindsym 9 mode default, exec ntrcmd9.script 9;
     bindsym period mode default, exec ntrcmd9.script D;
@@ -2191,14 +2272,7 @@ bar {
     status_command while ${HOME}/.config/sway/scripts.d/statusbars.script; do sleep 2; done
 }
 
-### GOODIES MENU BAR
-
-# A horizontal banner menu anchored to the top or bottom edge of the
-# active output. f12 toggles between shown and being hidden.  See the
-# file "goodies.script" for explanations, excuses, etc. The X at the
-# right is used to remove spurious copies of the goodies banner when
-# debugging.
-bindsym f12 exec $SWAY_SCRIPTS_DIR/goodies.script
+### SESSION STARTUP
 
 # Having done the configuration constants we use scripts to perform
 # sequential configuration step-by-step. A script can mix exec and
@@ -2209,12 +2283,14 @@ exec $SWAY_SCRIPTS_DIR/setup.script
 ### POPUPTOOLS TIDYING UP (see "goodies.script" popuptools() comment)
 
 for_window [title="LHS PopUp Terminal" floating] \
-	   move position 8 px 100 px, resize set width 720 px height 900 px;
+	   move position 8 px 100 px, \
+	   resize set width 720 px height 900 px;
 for_window [title="RHS PopUp Terminal" floating] \
-	   move position 968 px 100 px, resize set width 720 px height 900 px;
+	   move position 968 px 100 px,\
+	   resize set width 720 px height 900 px;
 for_window [title="Volume Control"     floating] \
-	   move position center, resize set width 960 px height 540 px;
-
+	   move position center, \
+	   resize set width 960 px height 540 px;
  
 ### TYPING COMMANDS IS EASY WITH HISTORY 
 ### (This could improve your productivity.)
@@ -2251,7 +2327,7 @@ for_window [title="Volume Control"     floating] \
 
 # "swaymsg" can be replaced by "sway" out of the box. An alias could
 # be one character, several aliases would allow options to be included
-# in aliases. The double quotes around the rest of the command ca be
+# in aliases. The double quotes around the rest of the command can be
 # inserted programmatically
 
 # This is for discussion.
