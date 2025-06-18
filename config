@@ -2288,11 +2288,11 @@ for_window [title="LHS PopUp Terminal" floating] \
 for_window [title="RHS PopUp Terminal" floating] \
 	   move position 968 px 100 px,\
 	   resize set width 720 px height 900 px;
-for_window [title="Volume Control"     floating] \
+for_window [title="Volume Control" floating] \
 	   move position center, \
 	   resize set width 960 px height 540 px;
  
-### TYPING COMMANDS IS EASY WITH HISTORY 
+### TYPING COMMANDS IS EASY WITH HISTORY CACHEING
 ### (This could improve your productivity.)
 
 # Imagine,  you  are at  a  terminal,  trying  to remember  an  arcane

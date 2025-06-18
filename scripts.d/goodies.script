@@ -80,7 +80,7 @@ function hide
 
 #
 # Give the user an opportunity to use a mouse to cancel the command
-# that would otherwise end the sway session.
+# that would otherwise end the sway session. Call from show for example.
 #
 function are-you-sure
 {
@@ -179,7 +179,8 @@ function popuptools
 	    # are invoked once more.
 	    sway '[title="PopUp Terminal"] kill'
 	    sway '[title="Volume Control"] kill'
-	    sway "exec kgx --title=\"LHS PopUp Terminal\""  
+
+	    sway "exec kgx --title=\"LHS PopUp Terminal\""
 	    sway "exec kgx --title=\"RHS PopUp Terminal\""
 	    # Fedora Sway spin has pavucontrol and pavucontrol-qt.
 	    sway "exec pavucontrol-qt"
@@ -195,34 +196,6 @@ function popuptools
     # is done in config, see POPUPTOOLS TIDYING UP.
 }
 # end popuptools
-
-#
-# Mount some fifteen year old Samsung internal drives.
-# Yes, it's ellathecat's quirky DE.
-#
-function msam
-{
-    sudo mkdir -p /mnt/Samsung-4; sleep 1;
-    sudo mount -t ntfs /dev/sda1 /mnt/Samsung-4
-    sudo mkdir -p /mnt/Samsung-5; sleep 1;
-    sudo mount -t ntfs /dev/sdb1 /mnt/Samsung-5
-    sudo mkdir -p /mnt/Samsung-3; sleep 1;
-    sudo mount -t ntfs /dev/sdd1 /mnt/Samsung-3
-    sudo mkdir -p /mnt/Samsung-6; sleep 1;
-    sudo mount -t ntfs /dev/sde1 /mnt/Samsung-6
-}
-
-#
-# Umount some fifteen year old Samsung internal drives.
-# Yes, it's ellathecat's quirky DE.
-#
-function usam
-{
-    sudo umount /mnt/Samsung-3
-    sudo umount /mnt/Samsung-4
-    sudo umount /mnt/Samsung-5
-    sudo umount /mnt/Samsung-6
-}
 
 #
 # Start here.
@@ -243,23 +216,19 @@ case "${1:-toggle}" in
 	        hide
 		;;
 	    (*)
-		exit 2
+x		exit 2
 		;;
 	esac
 	;;
-    # Popup terminal, volume control, download mgmt,
+    # Popup terminals, popup volume control, 
     (popuptools)
 	$1
-	;;
+ 	;;
     # Are you sure wrapper.
     (are-you-sure)
 	$@
 	;;
-    # Mount and Umount two (ancient) internal SATA HDDs
-    (msam|usam)
-	$1
-	;;
-    # Not implemented stuff.
+     # Not implemented stuff.
     (*)
         exit 1
         ;;
