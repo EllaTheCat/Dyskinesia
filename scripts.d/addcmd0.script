@@ -13,8 +13,8 @@
 # bash script instead of using i3/sway config syntax. Worse still,
 # each time you edit "config" you run the risk of your Parkinson's
 # induced [2] typos fatally corrupting any of over 1500 lines of code;
-# conversely when editing the addcmsd0.script (or 19 similar command
-# scripts) typo damage is confined to ~40 lines and likely to be
+# conversely when editing the addcmd0.script (or 19 similar command
+# scripts) typo damage is confined to ~60 lines and likely to be
 # visible on screen. Furthermore, ShellCheck will catch many typos.
 
 # [2] This is still advantageous if you don't have Parkinson's. I do,
@@ -22,7 +22,7 @@
 
 # There are 20 (twenty) of these command scripts, 10 (ten) for each of
 # $ADDCMD and $NTRCMD, and to avoid a maintenance nightmare, the large
-# boilerplate comments that would apply to commmon code are judged
+# boilerplate comments that would apply to common code are judged
 # more dangerous than helpful and are therefore omitted from the other
 # (19) command scripts and are restricted to this one, which is
 # hopefully read first.
@@ -46,34 +46,65 @@ export SWAY_ASSETS_DIR=${HOME}/.config/sway/assets.d
 
 function addcmd0
 {
-    digit=$1
-    case "$digit" in
+    # NumLock must be ON for these 11 keys. For example, the config
+    # file has mapped 3 and KP_3 to call this script with $1 = 3 but
+    # not KP_Next (Page Down).
+
+    # speak-ng is less intrusive for runtime debug than printf
+    # etc. User gets feedback of the key sequence that they have
+    # pressed. OTOH, do learn to test in termimals like this for
+    # example if you do print text debug
+    
+    # ellathecat> addcmd2.script 3
+    # ellathecat> workspace 56
+    
+    # Here the cases are arranged by rows ascending but in other
+    # addcmd? scripts you'll see them arranged by column. Use the
+    # order thst helps you remember what each key sequence does.
+    
+    case "$lsdigit" in
 	(0)
-	;;
+	    # The double width 0 key
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    ;;
 	(1)
-	;;
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    ;;
 	(2)
-	;;
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    ;;
 	(3)
-	;;
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    ;;
 	(4)
-	;;
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    ;;
 	(5)
-	;;
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    ;;
 	(6)
-	;;
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    ;;
 	(7)
-	;;
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    ;;
 	(8)
-	;;
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    ;;
 	(9)
-	;;
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    ;;
 	(D)
-	;;
+	    # The decimal point key to the right of the 0.
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    ;;
     esac
 }
 
 # Start here.
+mode="mode is modifier super alt numpad key add"
+msdigit=0
+lsdigit=$1
 # keysym -> exec addcmd0.script N -> addcmd0(N)
 name=$(basename $0)
 func=${name/.script/}

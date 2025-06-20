@@ -1,6 +1,9 @@
 #!/bin/bash
 # ntrcmd0.script
 
+# Online Help Show the available command scripts with their bindings
+# inside a separate emacs instance on a dedicated workspace.
+
 ### SOME IMPORTANT EARLY DECLARATIONS
 export SWAY_CONFIG_FILE=${HOME}/.config/sway/config
 export SWAY_CONFIG_DIR=${HOME}/.config/sway/config.d
@@ -10,55 +13,65 @@ export SWAY_ASSETS_DIR=${HOME}/.config/sway/assets.d
 # the eponymous section of the SWAY_CONFIG_FILE. Config variables are
 # not shell variables.
 
-# Show the available command scripts with their bindings inside a
-# separate emacs instance on a dedicated workspace.
 function ntrcmd0
 {
-    digit=$1
-    case "$digit" in
+    case "$lsdigit" in
 	(0)
-	   # Load all cmd scripts into a fresh emacs instance and set
-		# them read only. I chose emacs as the presenter but
-		# I'm confident nvim can do it and maybe one day I'll
-		# be able to provide it here.
-	 
-	    # https://superuser.com/questions/204236/\
-		how-can-i-open-a-file-read-only-from-command-line-with-emacs-vi-vim
-
-	   # My main emacs is on workspace 33, an odd number, so put
-	   # help on an even numbered workspace so we can see both at
-	   # once, layout like an open book.`
-	   workspace 66
-	   cd ${SWAY_SCRIPTS_DIR}
-	   emacs \
-	       --eval "(add-hook 'find-file-hook (defun make-read-only () (setq buffer-read-only t)))" \
-	       ntrcmd?.script addcmd?.script
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    
+	    # Load all cmd scripts into a fresh emacs instance and set
+	    # them read only. I chose emacs as the presenter but
+	    # I'm confident nvim can do it and maybe one day I'll
+	    # be able to provide it here.
+	    
+            # https://superuser.com/questions/204236/\
+	    how-can-i-open-a-file-read-only-from-command-line-with-emacs-vi-vim
+	    cd ${SWAY_SCRIPTS_DIR}
+	    emacs \
+		--eval "(add-hook 'find-file-hook (defun make-read-only () (setq buffer-read-only t)))" \
+		ntrcmd?.script addcmd?.script
 	    ;;
 	(1)
-	;;
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    ;;
 	(2)
-	;;
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    ;;
 	(3)
-	;;
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    ;;
 	(4)
-	;;
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    ;;
 	(5)
-	;;
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    ;;
 	(6)
-	;;
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    ;;
 	(7)
-	;;
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    ;;
 	(8)
-	;;
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    ;;
 	(9)
-	;;
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    ;;
 	(D)
-	;;
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    ;;
     esac
 }
 
 # Start here.
-# keysym -> exec addcmd0.script N -> addcmd0(N)
+mode="mode is modifier shift alt super or numpad key enter"
+msdigit=0
+lsdigit=$1
+name=$(basename $0)
+func=${name/.script/}
+$func $1
+# keysym -> exec ntrcmd0.script N -> ntrcmd0(N)
 name=$(basename $0)
 func=${name/.script/}
 $func $1

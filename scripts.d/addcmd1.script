@@ -3,50 +3,55 @@
 
 export SWAY_CONFIG_FILE=${HOME}/.config/sway/config
 export SWAY_CONFIG_DIR=${HOME}/.config/sway/config.d
-export SWAY_SCRIPTS_DIR=${HOME}/.config/sway/scripts.d
+export SWAY_S$CRIPTS_DIR=${HOME}/.config/sway/scripts.d
 export SWAY_ASSETS_DIR=${HOME}/.config/sway/assets.d
 
 function addcmd1
 {
-    digit=$1
-    case "$digit" in
+    case "$lsdigit" in
 	# Column9
 	(9)
-	    sway "exec wl-copy 'ssh 192.168.1.239 sudo poweroff'"
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    # Private.
+	    sway "exec foot --title=\"MiniDLNA UPnP server\" --hold -e upnp.script start"
 	    ;;
 	(6)
-	    sway "exec wl-copy 'ssh 192.168.1.239 sudo reboot'".
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    # Private.
+	    sway "exec foot --title=\"MiniDLNA UPnP server\" -e upnp.script stop"
 	    ;;
 	(3)
-	    sway "exec wtype $(wl-paste)"
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
 	    ;;
 	(D)
-	    sway "someterminals.script 4 32"
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
 	    ;;
 	# Column8
 	(8)
-	    sway "exec ssh rpi4b sudo poweroff"
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
 	    ;;
 	(5)
-	    sway "exec ssh rpi4b sudo reboot"
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
 	    ;;
 	(2)
-	    # Change colour temperature according to time of day (toggle).
-	    if [ $(pgrep -c -f wlsunset) -eq 1 ]; then
-		pkill -f wlsunset
-	    else
-		sway "exec wlsunset"
-	    fi
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
 	    ;;
 	# Column7
 	(7)
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    # Private. "Jean-Philippe MATETA!"
             sway "exec foot -e ${HOME}/local/private/bin/LETSGO" 
 	    ;;
 	(4)
-	    # Private.
+	    # Private. Chez ellathecat. Needs a tidy up.
             sway "exec foot -e ${HOME}/local/private/bin/4kRH10" 
 	    ;;	
 	(1)
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
+	    ;;
+	# Column78
+	(0)
+	    sway "exec speak-ng \"$mode $msdigit $lsdigit\""
 	    # Show this popup (Network Manager)
 	    # Github- https://github.com/Blazzzeee/network_manager_ui
 	    # https://www.reddit.com/r/swaywm/comments/1ivkpop/\
@@ -58,16 +63,13 @@ function addcmd1
 		sway "exec \"network_manager\""
 	    fi
 	    ;;
-	# Column78
-	(0)
-	    # Private.
-	    foot --title="MiniDLNA UPnP server" \
- 		 -e $SWAY_SCRIPTS_DIR/upnp.script &
-	    ;;
     esac
 }
 
 # Start here.
+mode="mode is modifier alt super numpad key add"
+msdigit=1
+lsdigit=$1
 name=$(basename $0)
 func=${name/.script/}
 $func $1
