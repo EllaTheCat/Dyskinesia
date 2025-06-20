@@ -206,7 +206,7 @@ case "$ws" in
 	;;
     (66X|43X)
 	# This workspace starts with four instances of "foot".
-	app="foot"; exe="someterminals.script foot 4 32";
+	app="foot"; exe="someterminals.script foot 4 ${ws}";
 	subroutine "$ws" "$app" "$exe"
 	;;
     (66|43)
@@ -214,9 +214,19 @@ case "$ws" in
 	app="kgx"; exe="someterminals.script kgx 4 ${ws}";
 	subroutine "$ws" "$app" "$exe"
 	;;
-    (22)
+    (22X)
+	# Dedicated spotify APP. It has issues at the moment so fall
+	# back to using the web player under chrome, see case below.
 	app="spotify"; exe="flatpak run com.spotify.Client";
 	subroutine "$ws" "$app" "$exe"
+	;;
+    (22)
+	# Spotify web player on Chrome (fallback). It's a quick and
+	# dirty fix so please don't put another Chrome window on this
+	# workspace and expect it to behave.
+	app="Google-chrome"
+	exe="google-chrome --new-window open.spotify.com"
+        subroutine "$ws" "$app" "$exe"
 	;;
     (17)
 	app="gnome-disks"; exe="gnome-disks";

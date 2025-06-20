@@ -42,9 +42,12 @@ do
 	# the case in a loop.
 
 	(9)
-	    # Choose introduction video on 00 or spotify on 22.
-	    speak-ng "spotify"
-	    swaymsg "exec \"${SWAY_SCRIPTS_DIR}/workspace.script 22\""
+	    #  In the past, this slot has allowed 5 seconds to launch
+	    #  the spotify app, but no more because issues with the
+	    #  app. Rather than adjust all the subsequent timings, we
+	    #  advance the seconds elapsed count to trigger the next
+	    #  case on the next pass round the loop.
+	    secs=13
 	    ;;
 	(14)
 	    ### ODD 67 thunar pair with EVEN 66 kgx OR EVEN 44 thunar
